@@ -35,4 +35,19 @@ return [
         ],
     ],
 
+    'meta' => [
+        'client_id' => env('META_APP_ID'),
+        'client_secret' => env('META_APP_SECRET'),
+        'redirect' => env('META_REDIRECT'),
+    ],
+
+    'facebook' => [
+        'client_id' => env('META_APP_ID'),
+        'client_secret' => env('META_APP_SECRET'),
+        'redirect' => env('META_REDIRECT'),
+    ],
+
+    // Toggle to force Socialite into stateless mode (useful for local testing).
+    'socialite_stateless' => env('SOCIALITE_STATELESS', false),
+
 ];
