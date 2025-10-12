@@ -1,0 +1,104 @@
+<template>
+  <AppLayout :title="`Customer - ${customer.user.name}`">
+    <div class="container mx-auto px-4 py-8">
+      <!-- Header -->
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold">{{ customer.user.name }}</h1>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Customer Info -->
+        <div class="space-y-6">
+          <div class="rounded-lg bg-card p-6">
+            <h2 class="text-lg font-medium mb-4">Customer Information</h2>
+            
+            <div class="space-y-4">
+              <div>
+                <label class="text-sm text-foreground/70">Email</label>
+                <div>{{ customer.user.email }}</div>
+              </div>
+              <div>
+                <label class="text-sm text-foreground/70">Phone</label>
+                <div>{{ customer.phone }}</div>
+              </div>
+              <div>
+                <label class="text-sm text-foreground/70">Address</label>
+                <div>{{ customer.address }}</div>
+                <div>{{ customer.city }}, {{ customer.state }} {{ customer.zip_code }}</div>
+                <div>{{ customer.country }}</div>
+              </div>
+              <div>
+                <label class="text-sm text-foreground/70">Member Since</label>
+                <div>{{ new Date(customer.user.created_at).toLocaleDateString() }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order History -->
+        <div class="md:col-span-2">
+          <div class="rounded-lg bg-card">
+            <div class="p-6 border-b">
+              <h2 class="text-lg font-medium">Order History</h2>
+            </div>
+
+            <div class="divide-y">
+              <div
+                v-for="order in customer.user.orders"
+                :key="order.id"
+                class="p-6"
+              >
+                <div class="flex items-center justify-between mb-4">
+                  <div>
+                    <div class="font-medium">Order #{{ order.order_number }}</div>
+                    <div class="text-sm text-foreground/70">
+                      {{ new Date(order.created_at).toLocaleDateString() }}
+                    </div>
+                  </div>
+                  <div>
+                    <span
+                      class="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium"
+                      :class="{
+                        'bg-yellow-500/10 text-yellow-500': order.status === 'pending',
+                        'bg-blue-500/10 text-blue-500': order.status === 'processing',
+                        'bg-green-500/10 text-green-500': order.status === 'completed',
+                        'bg-red-500/10 text-red-500': order.status === 'cancelled'
+                      }"
+                    >
+                      {{ order.status }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="text-sm">
+                  <div class="font-medium">${{ order.total_amount }}</div>
+                  <div class="text-foreground/70">
+                    {{ order.items.length }} items
+                  </div>
+                </div>
+
+                <div class="mt-4 flex justify-end">
+                  <Link
+                    :href="`/orders/${order.id}`"
+                    class="text-sm text-foreground/70 hover:text-foreground"
+                  >
+                    View Order Details →
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </AppLayout>
+</template>
+
+<script setup>
+import { Link } from '@inertiajs/vue3'
+import AppLayout from '@/layouts/AppLayout.vue'
+
+defineProps({
+  customer: Object
+})
+</script>
