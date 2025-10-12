@@ -12,8 +12,9 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Order::with(['items.product', 'user'])
-            ->where('user_id', auth()->id());
+        $customer = auth()->guard('customer')->user();
+        $query = Order::with(['items.product', 'customer'])
+            ->where('customer_id', $customer?->id);
 
         if ($request->status) {
             $query->where('status', $request->status);
@@ -56,8 +57,9 @@ class OrderController extends Controller
             'notes' => 'nullable|string'
         ]);
 
+        $customer = auth()->guard('customer')->user();
         $cartItems = CartItem::with('product')
-            ->where('user_id', auth()->id())
+            ->where('customer_id', $customer?->id)
             ->get();
 
         if ($cartItems->isEmpty()) {
@@ -69,7 +71,7 @@ class OrderController extends Controller
             return $item->product->price * $item->quantity;
         });
 
-        $validated['user_id'] = auth()->id();
+        $validated['customer_id'] = $customer?->id;
         $validated['order_number'] = 'ORD-' . Str::random(10);
         $validated['total_amount'] = $totalAmount;
         $validated['status'] = 'pending';
@@ -89,7 +91,7 @@ class OrderController extends Controller
         }
 
         // Clear cart
-        CartItem::where('user_id', auth()->id())->delete();
+        CartItem::where('customer_id', $customer?->id)->delete();
 
         return redirect()->route('orders.show', $order)
             ->with('success', 'Order placed successfully.');

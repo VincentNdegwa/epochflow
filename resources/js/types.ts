@@ -3,7 +3,21 @@ export interface User {
     name: string;
     email: string;
 }
-
+export interface Store {
+    id: number;
+    name: string;
+    slug: string;
+    description: string | null;
+    contact_email: string | null;
+    contact_phone: string | null;
+    address: string | null;
+    is_active: boolean;
+    template: string;
+    banner_url?: string;
+    logo_url?: string;
+    created_at: string;
+    updated_at: string;
+}
 export interface Store {
     id: number;
     name: string;
@@ -14,7 +28,6 @@ export interface Store {
     updated_at: string;
     user?: User;
 }
-
 export interface Category {
     id: number;
     name: string;
@@ -25,6 +38,17 @@ export interface Category {
     updated_at: string;
     products_count?: number;
     image_url: string | null;
+}
+
+export interface Customer {
+    id: number;
+    name: string;
+    email: string;
+    billing_address: string | null;
+    billing_city: string | null;
+    billing_state: string | null;
+    billing_zip: string | null;
+    billing_country: string | null;
 }
 
 export interface ProductImage {
@@ -73,7 +97,7 @@ export interface CartItem {
     quantity: number;
     created_at: string;
     updated_at: string;
-    product?: Product;
+    product: Product;
 }
 
 export interface Order {

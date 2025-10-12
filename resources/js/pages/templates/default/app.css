@@ -231,6 +231,9 @@
         color: var(--foreground);
         font-family: var(--font-sans);
     }
+    button {
+        cursor: pointer;
+    }
 
     /* Enhanced Typography */
     h1,

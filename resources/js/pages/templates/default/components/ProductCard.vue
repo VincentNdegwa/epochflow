@@ -1,8 +1,8 @@
 <!-- Default template product card component -->
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
+import { Link, useForm } from '@inertiajs/vue3';
 import { Eye, Heart, ShoppingCart } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import { route } from 'ziggy-js';
 import { Product } from '../types';
 
@@ -12,7 +12,6 @@ interface Props {
 }
 
 const props = defineProps<Props>();
-const hovered = ref(false);
 
 const formattedPrice = computed(() => {
     return new Intl.NumberFormat('en-US', {
@@ -28,12 +27,24 @@ const imageSrc = computed(
         '/images/placeholder.png',
 );
 
+const form = useForm({
+    product_id: props.product.id,
+    quantity: 1,
+});
+
 function addToCart() {
-    window.dispatchEvent(
-        new CustomEvent('add-to-cart', {
-            detail: { productId: props.product.id, quantity: 1 },
-        }),
-    );
+    form.post(route('cart.store', { storeSlug: props.storeSlug }), {
+        preserveScroll: true,
+        onStart: () => {
+            // optional: could set a loading flag here
+        },
+        onSuccess: () => {
+            // optional: show UI feedback, Inertia flash will carry server message
+        },
+        onError: () => {
+            // optional: handle validation errors
+        },
+    });
 }
 </script>
 
