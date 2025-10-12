@@ -59,7 +59,6 @@ function validate(): boolean {
         'billing_country',
     ];
 
-    // shipping fields are required (will be copied from billing when sameAsBilling=true)
     const shippingFields = [
         'shipping_address',
         'shipping_city',
@@ -83,6 +82,8 @@ function validate(): boolean {
     if (!form.payment_method) {
         localErrors.value.payment_method = 'Please select a payment method.';
     }
+
+    console.log(Object.keys(localErrors.value).length);
 
     return Object.keys(localErrors.value).length === 0;
 }
@@ -137,7 +138,10 @@ function placeOrder() {
         form.shipping_country = form.billing_country;
     }
 
-    if (!validate()) {
+    let isValid = validate();
+    console.log('isValid', isValid);
+
+    if (!isValid) {
         return;
     }
 
@@ -253,6 +257,44 @@ function placeOrder() {
                             </div>
                         </label>
                     </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <label class="flex flex-col">
+                            <span class="text-sm"
+                                >Billing state
+                                <span class="text-red-600">*</span></span
+                            >
+                            <input
+                                v-model="form.billing_state"
+                                placeholder="Billing state"
+                                class="input"
+                                required
+                            />
+                            <div
+                                v-if="localErrors.billing_state"
+                                class="text-sm text-red-600"
+                            >
+                                {{ localErrors.billing_state }}
+                            </div>
+                        </label>
+                        <label class="flex flex-col">
+                            <span class="text-sm"
+                                >Billing country
+                                <span class="text-red-600">*</span></span
+                            >
+                            <input
+                                v-model="form.billing_country"
+                                placeholder="Billing country"
+                                class="input"
+                                required
+                            />
+                            <div
+                                v-if="localErrors.billing_country"
+                                class="text-sm text-red-600"
+                            >
+                                {{ localErrors.billing_country }}
+                            </div>
+                        </label>
+                    </div>
                     <label class="inline-flex items-center gap-2">
                         <input type="checkbox" v-model="sameAsBilling" />
                         <span>Shipping address same as billing</span>
@@ -313,6 +355,44 @@ function placeOrder() {
                             </div>
                         </label>
                     </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <label class="flex flex-col">
+                            <span class="text-sm"
+                                >Shipping state
+                                <span class="text-red-600">*</span></span
+                            >
+                            <input
+                                v-model="form.shipping_state"
+                                placeholder="Shipping state"
+                                class="input"
+                                required
+                            />
+                            <div
+                                v-if="localErrors.shipping_state"
+                                class="text-sm text-red-600"
+                            >
+                                {{ localErrors.shipping_state }}
+                            </div>
+                        </label>
+                        <label class="flex flex-col">
+                            <span class="text-sm"
+                                >Shipping country
+                                <span class="text-red-600">*</span></span
+                            >
+                            <input
+                                v-model="form.shipping_country"
+                                placeholder="Shipping country"
+                                class="input"
+                                required
+                            />
+                            <div
+                                v-if="localErrors.shipping_country"
+                                class="text-sm text-red-600"
+                            >
+                                {{ localErrors.shipping_country }}
+                            </div>
+                        </label>
+                    </div>
                 </div>
                 <div class="mt-4">
                     <label class="mb-2 block font-medium"
@@ -361,7 +441,7 @@ function placeOrder() {
                         <span>Cash on Delivery</span>
                     </label>
 
-                    <label class="inline-flex mx-2 items-center gap-2">
+                    <label class="mx-2 inline-flex items-center gap-2">
                         <input
                             type="radio"
                             v-model="form.payment_method"
