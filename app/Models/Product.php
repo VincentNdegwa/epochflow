@@ -2,17 +2,19 @@
 
 namespace App\Models;
 
+use App\Traits\HasEncryptedSlug;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Product extends Model
 {
+    use HasEncryptedSlug;
     protected $fillable = [
+        'store_id',
         'category_id',
         'user_id',
         'name',
-        'slug',
         'description',
         'price',
         'stock',
@@ -23,6 +25,11 @@ class Product extends Model
         'price' => 'decimal:2',
         'is_active' => 'boolean',
     ];
+
+    public function store(): BelongsTo
+    {
+        return $this->belongsTo(Store::class);
+    }
 
     public function category(): BelongsTo
     {

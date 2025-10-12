@@ -5,19 +5,10 @@
       <nav class="container mx-auto flex h-16 items-center justify-between px-4">
         <!-- Logo -->
         <div class="flex items-center gap-6">
-          <a href="/" class="flex items-center space-x-2">
+          <a :href="`/store/${store.slug}`" class="flex items-center space-x-2">
             <div class="weave-icon w-8 h-8"></div>
-            <span class="font-semibold">EpochFlow Store</span>
+            <span class="font-semibold">{{ store.name }}</span>
           </a>
-          <!-- Main Navigation -->
-          <div class="hidden md:flex items-center space-x-6">
-            <Link href="/shop" class="text-foreground/80 hover:text-foreground">
-              Shop
-            </Link>
-            <Link href="/categories" class="text-foreground/80 hover:text-foreground">
-              Categories
-            </Link>
-          </div>
         </div>
 
         <!-- Right Side Navigation -->
@@ -168,6 +159,10 @@ defineProps({
   cartItemsCount: {
     type: Number,
     default: 0
-  }
+  },
+    store: {
+        type: Object,
+        required: true
+    }
 })
 </script>

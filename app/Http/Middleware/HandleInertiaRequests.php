@@ -45,13 +45,19 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
-            'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
-            'cartItemsCount' => function () use ($request) {
-                if ($request->user()) {
-                    return \App\Models\CartItem::where('user_id', $request->user()->id)->count();
-                }
-                return 0;
-            }
+            'hasStore' => $this->checkIfHasStore($request),
+            'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true'
         ];
+    }
+
+    private function checkIfHasStore(Request $request)
+    {
+        if ($request->routeIs('stores.*')) {
+            return true;
+        }
+        if ($request->user()) {
+            return $request->user()->stores()->exists();
+        }
+        return false;
     }
 }

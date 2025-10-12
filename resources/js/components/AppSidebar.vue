@@ -46,14 +46,9 @@ const mainNavItems: NavItem[] = [
         icon: Users,
     },
     {
-        title: 'Store',
-        href: '/shop',
+        title: 'Stores',
+        href: '/stores',
         icon: Store,
-    },
-    {
-        title: 'Cart',
-        href: '/cart',
-        icon: ShoppingCart,
     }
 ];
 </script>

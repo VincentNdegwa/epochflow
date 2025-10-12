@@ -24,6 +24,7 @@ export type AppPageProps<
     quote: { message: string; author: string };
     auth: Auth;
     sidebarOpen: boolean;
+    hasStore: boolean;
 };
 
 export interface User {

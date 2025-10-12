@@ -6,6 +6,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\StoreController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -19,6 +20,8 @@ Route::get('dashboard', function () {
 
 Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
 Route::get('/shop/products/{product:slug}', [ShopController::class, 'show'])->name('shop.products.show');
+Route::get('/store/{slug}', [StoreController::class, 'show'])->name('stores.show');
+
 
 Route::middleware(['auth'])->group(function () {
     // Cart Routes
@@ -45,6 +48,14 @@ Route::middleware(['auth'])->group(function () {
     // Customer Management
     Route::get('/customers', [CustomerController::class, 'index'])->name('customers.index');
     Route::get('/customers/{customer}', [CustomerController::class, 'show'])->name('customers.show');
+
+    // Store Management
+    Route::get('/stores', [StoreController::class, 'index'])->name('stores.index');
+    Route::get('/stores/create', [StoreController::class, 'create'])->name('stores.create');
+    Route::post('/stores', [StoreController::class, 'store'])->name('stores.store');
+    Route::get('/stores/{slug}/edit', [StoreController::class, 'edit'])->name('stores.edit');
+    Route::put('/stores/{slug}', [StoreController::class, 'update'])->name('stores.update');
+    Route::delete('/stores/{slug}', [StoreController::class, 'destroy'])->name('stores.destroy');
 
     // Category Management
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');

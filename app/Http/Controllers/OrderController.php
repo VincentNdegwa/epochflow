@@ -32,7 +32,7 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
-        $this->authorize('view', $order);
+        \Illuminate\Support\Facades\Gate::authorize('view', $order);
 
         return Inertia::render('Orders/Show', [
             'order' => $order->load('items.product')
@@ -96,7 +96,7 @@ class OrderController extends Controller
 
     public function cancel(Order $order)
     {
-        $this->authorize('update', $order);
+        \Illuminate\Support\Facades\Gate::authorize('update', $order);
 
         if ($order->status !== 'pending') {
             return redirect()->back()

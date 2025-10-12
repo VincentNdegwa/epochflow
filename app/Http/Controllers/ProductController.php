@@ -63,7 +63,7 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
-        $this->authorize('update', $product);
+        \Illuminate\Support\Facades\Gate::authorize('update', $product);
 
         $categories = Category::all();
 
@@ -75,7 +75,7 @@ class ProductController extends Controller
 
     public function update(Request $request, Product $product)
     {
-        $this->authorize('update', $product);
+        \Illuminate\Support\Facades\Gate::authorize('update', $product);
 
         $validated = $request->validate([
             'category_id' => 'required|exists:categories,id',
@@ -106,7 +106,7 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
-        $this->authorize('delete', $product);
+        \Illuminate\Support\Facades\Gate::authorize('delete', $product);
 
         $product->delete();
 

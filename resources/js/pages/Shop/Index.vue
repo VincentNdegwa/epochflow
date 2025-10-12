@@ -1,18 +1,28 @@
 <template>
-  <ShopLayout :user="user" :cart-items-count="cartItemsCount">
+  <ShopLayout :user="user" :store="store" :cart-items-count="cartItemsCount">
     <!-- Hero Section -->
     <section class="mb-12">
       <div class="relative">
         <div class="absolute inset-0 bg-gradient-to-r from-primary to-primary-2 opacity-10"></div>
         <div class="relative container mx-auto px-4 py-16">
           <div class="max-w-2xl">
-            <h1 class="text-4xl font-bold mb-4">Welcome to EpochFlow Store</h1>
+            <h1 class="text-4xl font-bold mb-4">{{ store.name }}</h1>
             <p class="text-lg text-foreground/80 mb-8">
-              Discover our curated collection of products
+              {{ store.description }}
             </p>
-            <Link href="#featured" class="btn-primary">
-              Shop Now
-            </Link>
+            <div class="flex items-center gap-4">
+              <Link href="#featured" class="btn-primary">
+                Shop Now
+              </Link>
+              <div class="text-sm text-foreground/70">
+                <div v-if="store.contact_email">
+                  Email: {{ store.contact_email }}
+                </div>
+                <div v-if="store.contact_phone">
+                  Phone: {{ store.contact_phone }}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -70,32 +80,74 @@
       </div>
 
       <!-- Pagination -->
-      <div v-if="products.data.last_page > 1" class="mt-8">
-        <Pagination :links="products.data.links" />
+      <div v-if="products.last_page > 1" class="mt-8">
+        <Pagination :links="products.links" />
       </div>
     </section>
   </ShopLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { watch } from 'vue'
 import { router } from '@inertiajs/vue3'
 import ShopLayout from '@/layouts/shop/ShopLayout.vue'
 import ProductCard from '@/components/shop/ProductCard.vue'
 import Pagination from '@/components/Pagination.vue'
 
-const props = defineProps({
-  user: Object,
-  cartItemsCount: Number,
-  categories: Array,
-  products: Object,
+interface Store {
+  id: number;
+  name: string;
+  slug: string;
+  description: string | null;
+  contact_email: string | null;
+  contact_phone: string | null;
+  address: string | null;
+  is_active: boolean;
+}
+
+interface Product {
+  id: number;
+  name: string;
+  slug: string;
+  description: string;
+  price: number;
+  stock: number;
+  is_active: boolean;
+  primary_image: string;
+  category: {
+    id: number;
+    name: string;
+    slug: string;
+  };
+}
+
+interface Category {
+  id: number;
+  name: string;
+  slug: string;
+}
+
+interface Props {
+  store: Store;
+  user: any;
+  cartItemsCount: number;
+  categories: Category[];
+  products: {
+    data: Product[];
+    links: any[];
+    last_page: number;
+  };
   filters: {
-    type: Object,
-    default: () => ({
-      category: null,
-      sort: 'latest'
-    })
-  }
+    category: string | null;
+    sort: 'latest' | 'price_asc' | 'price_desc';
+  };
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  filters: () => ({
+    category: null,
+    sort: 'latest'
+  })
 })
 
 watch(() => props.filters, (newFilters) => {

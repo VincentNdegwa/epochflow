@@ -53,7 +53,7 @@ class CartController extends Controller
 
     public function update(Request $request, CartItem $cartItem)
     {
-        $this->authorize('update', $cartItem);
+        \Illuminate\Support\Facades\Gate::authorize('update', $cartItem);
 
         $validated = $request->validate([
             'quantity' => 'required|integer|min:1'
@@ -67,7 +67,7 @@ class CartController extends Controller
 
     public function destroy(CartItem $cartItem)
     {
-        $this->authorize('delete', $cartItem);
+        \Illuminate\Support\Facades\Gate::authorize('delete', $cartItem);
 
         $cartItem->delete();
 
