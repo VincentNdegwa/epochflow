@@ -31,11 +31,11 @@ class StoreController extends Controller
     {
         $store = Store::where('slug', $request->slug)->firstOrFail();
 
-        $query = $store->products()->with('categories');
+        $query = $store->products()->with('category');
 
         if ($request->category) {
-            $query->whereHas('categories', function ($q) use ($request) {
-                $q->where('slug', $request->category);
+            $query->whereHas('category', function ($q) use ($request) {
+                $q->where('id', $request->category);
             });
         }
 

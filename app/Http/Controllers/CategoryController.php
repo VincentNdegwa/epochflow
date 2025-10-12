@@ -10,7 +10,13 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = Category::withCount('products')
+        $store = current_store();
+        if (!$store) {
+            return redirect()->back()
+                ->with('error', 'No store context found. Please ensure you are logged in and associated with a store.');
+        }
+
+        $categories = Category::where('store_id', $store->id)->withCount('products')
             ->latest()
             ->paginate(10);
 
@@ -31,6 +37,14 @@ class CategoryController extends Controller
             'description' => 'nullable|string',
             'is_active' => 'boolean'
         ]);
+
+        $store = current_store();
+        if (!$store) {
+            return redirect()->back()
+                ->with('error', 'No store context found. Please ensure you are logged in and associated with a store.');
+        }
+
+        $validated['store_id'] = $store->id;
 
         Category::create($validated);
 

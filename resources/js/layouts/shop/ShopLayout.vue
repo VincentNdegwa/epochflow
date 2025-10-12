@@ -127,7 +127,7 @@
 
         <!-- Bottom Footer -->
         <div class="mt-8 pt-8 border-t text-sm text-foreground/70">
-          <p>&copy; 2025 EpochFlow Store. All rights reserved.</p>
+          <p>&copy; 2025 {{ store.name }} . All rights reserved.</p>
         </div>
       </div>
     </footer>

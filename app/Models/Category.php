@@ -16,6 +16,10 @@ class Category extends Model
         'description'
     ];
 
+    protected $appends = [
+        'slug',
+    ];
+
     public function store(): BelongsTo
     {
         return $this->belongsTo(Store::class);

@@ -33,18 +33,19 @@
     <section class="mb-12">
       <div class="flex items-center justify-between mb-6">
         <h2 class="text-2xl font-bold">Categories</h2>
-        <Link href="/categories" class="text-sm text-foreground/70 hover:text-foreground">
-        View All
-        </Link>
       </div>
+
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Link v-for="category in categories" :key="category.id" :href="`/shop?category=${category.slug}`"
-          class="group relative aspect-square overflow-hidden rounded-lg bg-muted">
-        <div class="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent"></div>
-        <div class="absolute inset-0 flex items-end p-4">
-          <h3 class="text-lg font-medium group-hover:text-primary transition-colors">
-            {{ category.name }}
-          </h3>
+        <Link v-for="category in categories" :key="category.id"
+          :href="route('stores.show', { slug: store.slug }) + `?category=${category.id}`"
+          class="group block overflow-hidden rounded-lg bg-muted">
+        <div class="relative aspect-square">
+          <div class="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent"></div>
+          <div class="absolute inset-0 flex items-end p-4">
+            <h3 class="text-lg font-medium group-hover:text-primary transition-colors">
+              {{ category.name }}
+            </h3>
+          </div>
         </div>
         </Link>
       </div>
@@ -79,7 +80,8 @@
 
 <script setup lang="ts">
 import { watch } from 'vue'
-import { router } from '@inertiajs/vue3'
+import { Link, router } from '@inertiajs/vue3'
+import { route } from 'ziggy-js'
 import ShopLayout from '@/layouts/shop/ShopLayout.vue'
 import ProductCard from '@/components/shop/ProductCard.vue'
 import Pagination from '@/components/Pagination.vue'

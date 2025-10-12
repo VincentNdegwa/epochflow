@@ -12,7 +12,13 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::with(['category', 'images'])
+        $store = current_store();
+        if (!$store) {
+            return redirect()->back()
+                ->with('error', 'No store context found. Please ensure you are logged in and associated with a store.');
+        }
+
+        $products = Product::where('store_id', $store->id)->with(['category', 'images'])
             ->where('user_id', auth()->id())
             ->latest()
             ->paginate(12);
@@ -41,6 +47,13 @@ class ProductController extends Controller
             'stock' => 'required|integer|min:0',
             'is_active' => 'boolean'
         ]);
+
+        $store = current_store();
+        if (!$store) {
+            return redirect()->back()
+                ->with('error', 'No store context found. Please ensure you are logged in and associated with a store.');
+        }
+        $validated['store_id'] = $store->id;
 
         $validated['user_id'] = auth()->id();
         $validated['slug'] = Str::slug($validated['name']);

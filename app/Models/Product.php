@@ -26,10 +26,16 @@ class Product extends Model
         'price' => 'decimal:2',
         'is_active' => 'boolean',
     ];
-    
+
     protected $appends = [
         'slug',
+        'primary_image'
     ];
+
+    public function getPrimaryImageAttribute(): ?string
+    {
+        return file_url($this->images()->orderBy('order')->first()?->path);
+    }
 
     public function store(): BelongsTo
     {

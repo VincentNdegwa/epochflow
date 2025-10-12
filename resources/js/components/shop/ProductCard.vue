@@ -8,7 +8,7 @@
         class="h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
       />
       <div
-        v-if="!product.in_stock"
+        v-if="product.stock <= 0"
         class="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm"
       >
         <span class="text-sm font-medium">Out of Stock</span>
@@ -30,7 +30,7 @@
 
     <!-- Add to Cart -->
     <button
-      v-if="product.in_stock"
+      v-if="product.stock > 0"
       @click="addToCart"
       class="absolute right-4 top-4 rounded-full bg-background/90 p-2 text-foreground/80 opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100 hover:text-foreground"
       :disabled="loading"
