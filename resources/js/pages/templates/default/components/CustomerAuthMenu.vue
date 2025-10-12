@@ -32,7 +32,7 @@
                             <MenuItem v-slot="{ active }">
                                 <Link
                                     :href="
-                                        route('orders.index', {
+                                        route('customer.orders.index', {
                                             storeSlug: store.slug,
                                         })
                                     "

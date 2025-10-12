@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\HasEncryptedSlug;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Order extends Model
 {
+    use HasEncryptedSlug;
     protected $fillable = [
         'store_id',
         'customer_id',
@@ -40,7 +42,7 @@ class Order extends Model
         return $this->belongsTo(Store::class);
     }
 
-    public function user(): BelongsTo
+    public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class, 'customer_id');
     }

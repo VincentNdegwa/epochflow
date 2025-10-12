@@ -12,9 +12,10 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
-        $customer = auth()->guard('customer')->user();
+        $store = current_store();
+
         $query = Order::with(['items.product', 'customer'])
-            ->where('customer_id', $customer?->id);
+            ->where('store_id', $store->id);
 
         if ($request->status) {
             $query->where('status', $request->status);
@@ -34,10 +35,9 @@ class OrderController extends Controller
     public function show(Request $request)
     {
         $order = Order::findBySlug($request->slug);
-        \Illuminate\Support\Facades\Gate::authorize('view', $order);
 
         return Inertia::render('Orders/Show', [
-            'order' => $order->load('items.product')
+            'order' => $order->load(['items.product.category', 'customer'])
         ]);
     }
 
@@ -99,7 +99,6 @@ class OrderController extends Controller
 
     public function cancel(Order $order)
     {
-        \Illuminate\Support\Facades\Gate::authorize('update', $order);
 
         if ($order->status !== 'pending') {
             return redirect()->back()

@@ -39,15 +39,23 @@ Route::prefix('store/{storeSlug}')->group(function () {
     Route::delete('cart/{cartItem}', [CartController::class, 'destroy'])->name('cart.destroy');
     Route::get('checkout', [\App\Http\Controllers\CustomerOrderController::class, 'create'])->name('checkout.create');
     Route::post('checkout', [\App\Http\Controllers\CustomerOrderController::class, 'store'])->name('checkout.store');
-    Route::get('checkout/pay/{order}', [\App\Http\Controllers\CustomerOrderController::class, 'pay'])->name('checkout.pay');
+    Route::get('checkout/pay/{order_id}', [\App\Http\Controllers\CustomerOrderController::class, 'pay'])->name('checkout.pay');
 
     Route::get('orders', [\App\Http\Controllers\CustomerOrderController::class, 'index'])->name('customer.orders.index');
-    Route::get('orders/{order}', [\App\Http\Controllers\CustomerOrderController::class, 'show'])->name('customer.orders.show');
+    Route::get('orders/{slug}', [\App\Http\Controllers\CustomerOrderController::class, 'show'])->name('customer.orders.show');
 });
 
 
 
 Route::middleware(['auth'])->group(function () {
+
+
+    // Checkout & Orders
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
+    Route::get('/orders/{slug}', [OrderController::class, 'show'])->name('orders.show');
+    Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
+
 
     // Product Management
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');

@@ -102,7 +102,9 @@ export interface CartItem {
 
 export interface Order {
     id: number;
+    slug: string;
     user_id: number;
+    order_number: string;
     store_id: number;
     total: number;
     status: string;

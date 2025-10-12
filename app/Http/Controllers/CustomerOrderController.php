@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class CustomerOrderController extends Controller
 {
@@ -37,9 +38,11 @@ class CustomerOrderController extends Controller
         ]);
     }
 
-    public function show(Request $request, Order $order)
+    public function show(Request $request)
     {
         $storeSlug = $request->route('storeSlug');
+        $order = Order::findBySlug($request->slug);
+
         $store = Store::where('slug', $storeSlug)->firstOrFail();
 
         $customer = Auth::guard('customer')->user();
@@ -105,84 +108,98 @@ class CustomerOrderController extends Controller
             'payment_method' => 'required|string',
         ]);
 
-        $customer = Auth::guard('customer')->user();
-        if (! $customer) {
-            return redirect()->route('stores.show', ['slug' => $store->slug])->with('error', 'Please login as a customer to checkout.');
-        }
-
-        $cartItems = CartItem::with('product')
-            ->where('customer_id', $customer->id)
-            ->get()
-            ->filter(fn($i) => $i->product && $i->product->store_id == $store->id)
-            ->values();
-
-        if ($cartItems->isEmpty()) {
-            return redirect()->back()->with('error', 'Your cart is empty.');
-        }
-
-        // Check stock availability
-        foreach ($cartItems as $item) {
-            if ($item->product->stock < $item->quantity) {
-                return redirect()->back()->with('error', "Product {$item->product->name} does not have enough stock.");
-            }
-        }
-
-        $total = $cartItems->sum(fn($item) => $item->product->price * $item->quantity);
-
-        $orderData = array_merge($validated, [
-            'store_id' => $store->id,
-            'customer_id' => $customer->id,
-            'order_number' => 'ORD-' . Str::upper(Str::random(8)),
-            'total_amount' => $total,
-            'status' => 'pending',
-        ]);
-
-        // Create order inside transaction
-        DB::beginTransaction();
         try {
-            $order = Order::create($orderData);
+            $customer = Auth::guard('customer')->user();
+            if (! $customer) {
+                return redirect()->route('stores.show', ['slug' => $store->slug])->with('error', 'Please login as a customer to checkout.');
+            }
+
+            $cartItems = CartItem::with('product')
+                ->where('customer_id', $customer->id)
+                ->get()
+                ->filter(fn($i) => $i->product && $i->product->store_id == $store->id)
+                ->values();
+
+            if ($cartItems->isEmpty()) {
+                return redirect()->back()->with('error', 'Your cart is empty.');
+            }
 
             foreach ($cartItems as $item) {
-                $order->items()->create([
-                    'product_id' => $item->product_id,
-                    'quantity' => $item->quantity,
-                    'price' => $item->product->price,
-                    'subtotal' => $item->product->price * $item->quantity,
-                ]);
-
-                // decrement stock
-                $item->product->decrement('stock', $item->quantity);
+                if ($item->product->stock < $item->quantity) {
+                    return redirect()->back()->with('error', "Product {$item->product->name} does not have enough stock.");
+                }
             }
 
-            DB::commit();
+            $total = $cartItems->sum(fn($item) => $item->product->price * $item->quantity);
+
+            $orderData = array_merge($validated, [
+                'store_id' => $store->id,
+                'customer_id' => $customer->id,
+                'order_number' => 'ORD-' . Str::upper(Str::random(8)),
+                'total_amount' => $total,
+                'status' => 'pending',
+            ]);
+
+            DB::beginTransaction();
+            try {
+                $order = Order::create($orderData);
+
+                foreach ($cartItems as $item) {
+                    $order->items()->create([
+                        'product_id' => $item->product_id,
+                        'quantity' => $item->quantity,
+                        'price' => $item->product->price,
+                        'subtotal' => $item->product->price * $item->quantity,
+                    ]);
+
+                    $item->product->decrement('stock', $item->quantity);
+                }
+
+                DB::commit();
+            } catch (\Throwable $e) {
+                DB::rollBack();
+                throw $e; // bubble up to outer catch
+            }
+
+            return redirect()->route('checkout.pay', ['storeSlug' => $store->slug, 'order_id' => $order->id]);
+        } catch (ValidationException $e) {
+            throw $e;
         } catch (\Throwable $e) {
-            DB::rollBack();
             return redirect()->back()->with('error', 'Failed to create order: ' . $e->getMessage());
         }
-
-        // Here you would call the payment gateway. For now, we'll simulate by redirecting to a pay endpoint.
-        return redirect()->route('checkout.pay', ['storeSlug' => $store->slug, 'order' => $order->id]);
     }
 
-    public function pay(Request $request, Order $order)
+    public function pay(Request $request)
     {
         $storeSlug = $request->route('storeSlug');
+        $order_id = $request->route('order_id');
+        try {
+            $order = Order::findOrFail($order_id);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return redirect()->route('stores.show', ['slug' => $storeSlug])->with('error', 'Order not found.');
+        }
+
         $store = Store::where('slug', $storeSlug)->firstOrFail();
 
         $customer = Auth::guard('customer')->user();
         if (! $customer || $order->customer_id !== $customer->id || $order->store_id !== $store->id) {
             abort(403);
         }
+        DB::beginTransaction();
+        try {
+            $order->update(['status' => 'paid']);
 
-        // Simulate payment success
-        $order->update(['status' => 'paid']);
+            CartItem::where('customer_id', $customer->id)
+                ->whereHas('product', fn($q) => $q->where('store_id', $store->id))
+                ->delete();
 
-        // clear customer's cart for this store
-        CartItem::where('customer_id', $customer->id)
-            ->whereHas('product', fn($q) => $q->where('store_id', $store->id))
-            ->delete();
+            DB::commit();
 
-        return redirect()->route('customer.orders.show', ['storeSlug' => $store->slug, 'order' => $order->id])
-            ->with('success', 'Payment successful and order placed.');
+            return redirect()->route('customer.orders.show', ['storeSlug' => $store->slug, 'slug' => $order->slug])
+                ->with('success', 'Payment successful and order placed.');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Payment failed: ' . $e->getMessage());
+        }
     }
 }
