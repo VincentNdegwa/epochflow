@@ -39,6 +39,14 @@ class StoreController extends Controller
             });
         }
 
+        if ($request->search) {
+            $search = '%' . $request->search . '%';
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', $search)
+                    ->orWhere('description', 'like', $search);
+            });
+        }
+
         switch ($request->get('sort', 'latest')) {
             case 'price_asc':
                 $query->orderBy('price', 'asc');
@@ -53,21 +61,44 @@ class StoreController extends Controller
 
         $products = $query->paginate(12);
 
-        $customer = Auth::guard('customer')->user();
+        $newArrivals = $store->products()
+            ->with('category')
+            ->latest()
+            ->take(8)
+            ->get();
 
+        $bestSellers = $store->products()
+            ->with('category')
+            ->orderBy('price', 'desc') // Temporary, ideally would be by sales_count
+            ->take(8)
+            ->get();
+
+        $featuredCategories = $store->categories()
+            ->withCount('products')
+            ->orderBy('products_count', 'desc')
+            ->take(6)
+            ->get();
+
+        $customer = Auth::guard('customer')->user();
 
         $cartItemsCount = 0;
         if ($customer) {
             $cartItemsCount = $customer->cartItems()->count();
         }
 
-        return Inertia::render('Shop/Index', [
+        $template = $store->template ?? 'default';
+
+        return Inertia::render("templates/{$template}/pages/Shop/Index", [
             'store' => $store,
             'categories' => $store->categories,
             'products' => $products,
+            'newArrivals' => $newArrivals,
+            'bestSellers' => $bestSellers,
+            'featuredCategories' => $featuredCategories,
             'filters' => [
                 'category' => $request->category,
-                'sort' => $request->get('sort', 'latest')
+                'sort' => $request->get('sort', 'latest'),
+                'search' => $request->get('search')
             ],
             'customer' => $customer,
             'cartItemsCount' => $cartItemsCount,

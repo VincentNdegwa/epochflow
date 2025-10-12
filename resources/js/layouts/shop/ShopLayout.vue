@@ -33,16 +33,7 @@
           </span>
           </Link>
 
-          <CustomerMenu v-if="customer" :customer="customer" :cart-items-count="cartItemsCount" :store="store" />
-          <template v-else>
-            <Link :href="route('customer.login', { storeSlug: store.slug })"
-              class="text-foreground/80 hover:text-foreground">
-            Login
-            </Link>
-            <Link :href="route('customer.register', { storeSlug: store.slug })" class="btn-primary">
-            Sign up
-            </Link>
-          </template>
+          <CustomerAuthMenu :customer="customer" :cart-items-count="cartItemsCount" :store="store" />
         </div>
       </nav>
     </header>
@@ -137,7 +128,7 @@
 <script setup>
 import { Link, Head } from '@inertiajs/vue3'
 import { ShoppingCart } from 'lucide-vue-next'
-import CustomerMenu from '../../components/shop/CustomerMenu.vue';
+import CustomerAuthMenu from '../../components/shop/CustomerAuthMenu.vue';
 
 defineProps({
   customer: {

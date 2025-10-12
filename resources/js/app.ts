@@ -1,4 +1,36 @@
-import '../css/app.css';
+interface InertiaState {
+    store?: {
+        template?: string;
+    };
+}
+
+declare global {
+    interface Window {
+        __INITIAL_STATE__: InertiaState;
+    }
+}
+
+const loadTemplateCSS = async () => {
+    const path = window.location.pathname;
+    // console.log('Current path:', path);
+
+    if (path.startsWith('/store/')) {
+        try {
+            const template =
+                window.__INITIAL_STATE__?.store?.template || 'default';
+            await import(`./pages/templates/${template}/app.css`);
+
+            // console.log(`Loaded template CSS: ${template}`);
+
+            return;
+        } catch (e) {
+            console.warn('Template CSS not found, falling back to default CSS');
+        }
+    }
+    await import('../css/app.css');
+};
+
+loadTemplateCSS();
 
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';

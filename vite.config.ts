@@ -12,7 +12,15 @@ export default defineConfig({
             ssr: 'resources/js/ssr.ts',
             refresh: true,
         }),
-        tailwindcss(),
+        tailwindcss({
+            config: {
+                content: [
+                    './resources/views/**/*.blade.php',
+                    './resources/js/**/*.{vue,js,ts,jsx,tsx}',
+                    './resources/js/pages/templates/**/*.{vue,css}',
+                ],
+            },
+        }),
         wayfinder({
             formVariants: true,
         }),

@@ -1,0 +1,314 @@
+@import 'tailwindcss';
+
+@import 'tw-animate-css';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+    --font-sans:
+        Instrument Sans, ui-sans-serif, system-ui, sans-serif,
+        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+        'Noto Color Emoji';
+
+    --radius-lg: var(--radius);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-sm: calc(var(--radius) - 4px);
+
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+
+    --color-destructive: var(--destructive);
+    --color-destructive-foreground: var(--destructive-foreground);
+
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+
+    --color-chart-1: var(--chart-1);
+    --color-chart-2: var(--chart-2);
+    --color-chart-3: var(--chart-3);
+    --color-chart-4: var(--chart-4);
+    --color-chart-5: var(--chart-5);
+
+    --color-sidebar: var(--sidebar-background);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-ring: var(--sidebar-ring);
+}
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--color-gray-200, currentColor);
+    }
+}
+
+@layer utilities {
+    body,
+    html {
+        --font-sans:
+            'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
+            'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+            'Noto Color Emoji';
+    }
+}
+
+:root {
+    /* Main Brand Colors */
+    --brand-primary: hsl(246, 80%, 60%); /* Rich Purple */
+    --brand-secondary: hsl(280, 84%, 60%); /* Vibrant Violet */
+    --brand-accent: hsl(326, 100%, 60%); /* Electric Pink */
+
+    /* Background and Surface Colors */
+    --background: hsl(250, 20%, 98%); /* Cool White */
+    --foreground: hsl(246, 40%, 16%); /* Deep Purple-Gray */
+    --card: hsl(250, 60%, 99%); /* Pristine White */
+    --card-foreground: hsl(246, 40%, 16%);
+    --popover: hsl(250, 60%, 99%);
+    --popover-foreground: hsl(246, 40%, 16%);
+
+    /* UI Colors */
+    --primary: var(--brand-primary);
+    --primary-foreground: hsl(0, 0%, 100%);
+    --secondary: var(--brand-secondary);
+    --secondary-foreground: hsl(0, 0%, 100%);
+    --accent: var(--brand-accent);
+    --accent-foreground: hsl(0, 0%, 100%);
+
+    /* Feedback Colors */
+    --success: hsl(155, 90%, 40%); /* Emerald Green */
+    --success-foreground: hsl(0, 0%, 100%);
+    --warning: hsl(38, 95%, 50%); /* Bright Orange */
+    --warning-foreground: hsl(0, 0%, 100%);
+    --destructive: hsl(0, 84%, 60%); /* Bold Red */
+    --destructive-foreground: hsl(0, 0%, 100%);
+
+    /* Neutral Colors */
+    --muted: hsl(246, 20%, 94%);
+    --muted-foreground: hsl(246, 20%, 40%);
+    --border: hsl(246, 20%, 88%);
+    --input: hsl(246, 20%, 88%);
+    --ring: var(--brand-primary);
+
+    /* Component Specific */
+    --sidebar-background: hsl(246, 40%, 16%);
+    --sidebar-foreground: hsl(246, 20%, 98%);
+    --sidebar-primary: var(--brand-primary);
+    --sidebar-primary-foreground: hsl(0, 0%, 100%);
+    --sidebar-accent: var(--brand-accent);
+    --sidebar-accent-foreground: hsl(0, 0%, 100%);
+    --sidebar-border: hsl(246, 30%, 26%);
+    --sidebar-ring: var(--brand-primary);
+
+    /* Data Visualization */
+    --chart-1: var(--brand-primary);
+    --chart-2: var(--brand-secondary);
+    --chart-3: var(--brand-accent);
+    --chart-4: var(--success);
+    --chart-5: var(--warning);
+
+    /* Spacing and Radius */
+    --radius-sm: 0.5rem;
+    --radius: 0.75rem;
+    --radius-md: 1rem;
+    --radius-lg: 1.25rem;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+    --shadow-md:
+        0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    --shadow-lg:
+        0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+}
+
+.dark {
+    /* Main Brand Colors - Slightly adjusted for dark mode */
+    --brand-primary: hsl(246, 80%, 65%); /* Brightened Purple */
+    --brand-secondary: hsl(280, 84%, 65%); /* Brightened Violet */
+    --brand-accent: hsl(326, 100%, 65%); /* Brightened Pink */
+
+    /* Background and Surface Colors */
+    --background: hsl(246, 40%, 8%); /* Deep Purple-Black */
+    --foreground: hsl(246, 20%, 98%); /* Cool White */
+    --card: hsl(246, 40%, 12%); /* Dark Purple-Gray */
+    --card-foreground: hsl(246, 20%, 98%);
+    --popover: hsl(246, 40%, 12%);
+    --popover-foreground: hsl(246, 20%, 98%);
+
+    /* UI Colors - Using brand colors */
+    --primary: var(--brand-primary);
+    --primary-foreground: hsl(0, 0%, 100%);
+    --secondary: var(--brand-secondary);
+    --secondary-foreground: hsl(0, 0%, 100%);
+    --accent: var(--brand-accent);
+    --accent-foreground: hsl(0, 0%, 100%);
+
+    /* Feedback Colors - Adjusted for dark mode */
+    --success: hsl(155, 90%, 45%);
+    --success-foreground: hsl(0, 0%, 100%);
+    --warning: hsl(38, 95%, 55%);
+    --warning-foreground: hsl(0, 0%, 100%);
+    --destructive: hsl(0, 84%, 65%);
+    --destructive-foreground: hsl(0, 0%, 100%);
+
+    /* Neutral Colors - Darker variants */
+    --muted: hsl(246, 20%, 16%);
+    --muted-foreground: hsl(246, 20%, 70%);
+    --border: hsl(246, 20%, 20%);
+    --input: hsl(246, 20%, 20%);
+    --ring: var(--brand-primary);
+
+    /* Component Specific - Dark variants */
+    --sidebar-background: hsl(246, 40%, 6%);
+    --sidebar-foreground: hsl(246, 20%, 98%);
+    --sidebar-primary: var(--brand-primary);
+    --sidebar-primary-foreground: hsl(0, 0%, 100%);
+    --sidebar-accent: var(--brand-accent);
+    --sidebar-accent-foreground: hsl(0, 0%, 100%);
+    --sidebar-border: hsl(246, 30%, 16%);
+    --sidebar-ring: var(--brand-primary);
+
+    /* Data Visualization - Using same colors for consistency */
+    --chart-1: var(--brand-primary);
+    --chart-2: var(--brand-secondary);
+    --chart-3: var(--brand-accent);
+    --chart-4: var(--success);
+    --chart-5: var(--warning);
+
+    /* Shadows - Adjusted for dark mode */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.4);
+    --shadow-md:
+        0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
+    --shadow-lg:
+        0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+}
+
+@layer base {
+    * {
+        border-color: var(--border);
+        outline-color: color-mix(in srgb, var(--ring) 50%, transparent);
+    }
+    body {
+        background-color: var(--background);
+        color: var(--foreground);
+        font-family: var(--font-sans);
+    }
+
+    /* Enhanced Typography */
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        color: var(--foreground);
+        font-weight: 600;
+        letter-spacing: -0.025em;
+    }
+
+    /* Component Base Styles */
+    .btn {
+        border-radius: var(--radius);
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .btn-primary {
+        background-color: var(--primary);
+        color: var(--primary-foreground);
+    }
+
+    .btn-primary:hover {
+        filter: brightness(110%);
+        transform: translateY(-1px);
+    }
+
+    .card {
+        background-color: var(--card);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow);
+        transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .input {
+        background-color: var(--input);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 0.5rem 1rem;
+        color: var(--foreground);
+    }
+
+    .input:focus {
+        outline: 2px solid var(--ring);
+        outline-offset: 2px;
+    }
+}
+
+@layer utilities {
+    .glass {
+        background: color-mix(in srgb, var(--background) 80%, transparent);
+        backdrop-filter: blur(12px);
+        border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+    }
+
+    .text-gradient {
+        background: linear-gradient(
+            to right,
+            var(--brand-primary),
+            var(--brand-accent)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .shadow-glow {
+        box-shadow: 0 0 20px
+            color-mix(in srgb, var(--brand-primary) 20%, transparent);
+    }
+}
