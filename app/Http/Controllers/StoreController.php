@@ -31,7 +31,8 @@ class StoreController extends Controller
     {
         $store = Store::where('slug', $request->slug)->firstOrFail();
 
-        $query = $store->products()->with('category');
+        $query = $store->products()->where('is_active', true)
+            ->with('category');
 
         if ($request->category) {
             $query->whereHas('category', function ($q) use ($request) {
@@ -63,12 +64,14 @@ class StoreController extends Controller
 
         $newArrivals = $store->products()
             ->with('category')
+            ->where('is_active', true)
             ->latest()
             ->take(8)
             ->get();
 
         $bestSellers = $store->products()
             ->with('category')
+            ->where('is_active', true)
             ->orderBy('price', 'desc') // Temporary, ideally would be by sales_count
             ->take(8)
             ->get();
@@ -76,7 +79,7 @@ class StoreController extends Controller
         $featuredCategories = $store->categories()
             ->withCount('products')
             ->orderBy('products_count', 'desc')
-            ->take(6)
+            ->where('is_active', true)
             ->get();
 
         $customer = Auth::guard('customer')->user();

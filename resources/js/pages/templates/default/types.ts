@@ -21,6 +21,7 @@ export interface Category {
     created_at: string;
     updated_at: string;
     products_count?: number;
+    image_url: string | null;
 }
 
 export interface Product {

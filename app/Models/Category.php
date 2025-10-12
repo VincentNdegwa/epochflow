@@ -13,11 +13,17 @@ class Category extends Model
     protected $fillable = [
         'store_id',
         'name',
-        'description'
+        'description',
+        'is_active',
+        'image_url'
     ];
 
     protected $appends = [
         'slug',
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
     ];
 
     public function store(): BelongsTo

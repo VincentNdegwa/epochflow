@@ -18,6 +18,15 @@ class ProductImage extends Model
         'is_primary' => 'boolean',
     ];
 
+    public function getPathAttribute(?string $value): ?string
+    {
+        if (empty($value)) {
+            return null;
+        }
+
+        return file_url($value);
+    }
+
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
