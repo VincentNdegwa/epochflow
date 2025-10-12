@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { Link, router } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import { route } from 'ziggy-js';
 import type { Customer, Store } from '../types';
-import AppLayout from './AppLayout.vue';
 
 import { ShoppingCart } from 'lucide-vue-next';
+import ToastLayout from '../../../../layouts/ToastLayout.vue';
 import CustomerAuthMenu from '../components/CustomerAuthMenu.vue';
 import bannerJpg from '../images/banner.jpg';
 import bannerWebp from '../images/banner2.webp';
@@ -109,7 +109,9 @@ const locationText = computed(() => (props.store as any)?.location ?? '');
 </script>
 
 <template>
-    <AppLayout>
+    <ToastLayout>
+        <Head :title="store.name" />
+        
         <div class="min-h-screen bg-gray-50">
             <!-- Navigation -->
             <header class="relative" :style="headerStyle">
@@ -647,7 +649,7 @@ const locationText = computed(() => (props.store as any)?.location ?? '');
                 </div>
             </footer>
         </div>
-    </AppLayout>
+    </ToastLayout>
 </template>
 
 <style>
