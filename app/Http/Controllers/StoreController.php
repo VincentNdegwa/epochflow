@@ -53,10 +53,13 @@ class StoreController extends Controller
 
         $products = $query->paginate(12);
 
+        $customer = Auth::guard('customer')->user();
+
+
         $cartItemsCount = 0;
-        // if (Auth::check()) {
-        //     $cartItemsCount = Auth::user()->cartItems()->count();
-        // }
+        if ($customer) {
+            $cartItemsCount = $customer->cartItems()->count();
+        }
 
         return Inertia::render('Shop/Index', [
             'store' => $store,
@@ -66,8 +69,8 @@ class StoreController extends Controller
                 'category' => $request->category,
                 'sort' => $request->get('sort', 'latest')
             ],
-            'user' => Auth::user(),
-            'cartItemsCount' => $cartItemsCount
+            'customer' => $customer,
+            'cartItemsCount' => $cartItemsCount,
         ]);
     }
 

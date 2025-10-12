@@ -61,8 +61,10 @@ class ProductController extends Controller
             ->with('success', 'Product created successfully.');
     }
 
-    public function edit(Product $product)
+    public function edit(Request $request)
     {
+        $product = Product::findBySlug($request->slug);
+
         \Illuminate\Support\Facades\Gate::authorize('update', $product);
 
         $categories = Category::all();

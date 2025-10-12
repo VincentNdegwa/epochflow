@@ -31,6 +31,10 @@ class Order extends Model
         'total_amount' => 'decimal:2',
     ];
 
+    protected $appends = [
+        'slug',
+    ];
+
     public function store(): BelongsTo
     {
         return $this->belongsTo(Store::class);

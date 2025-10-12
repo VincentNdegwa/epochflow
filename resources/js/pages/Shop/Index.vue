@@ -1,5 +1,6 @@
 <template>
-  <ShopLayout :user="user" :store="store" :cart-items-count="cartItemsCount">
+
+  <ShopLayout :customer="customer" :store="store" :cart-items-count="cartItemsCount">
     <!-- Hero Section -->
     <section class="mb-12">
       <div class="relative">
@@ -12,7 +13,7 @@
             </p>
             <div class="flex items-center gap-4">
               <Link href="#featured" class="btn-primary">
-                Shop Now
+              Shop Now
               </Link>
               <div class="text-sm text-foreground/70">
                 <div v-if="store.contact_email">
@@ -33,22 +34,18 @@
       <div class="flex items-center justify-between mb-6">
         <h2 class="text-2xl font-bold">Categories</h2>
         <Link href="/categories" class="text-sm text-foreground/70 hover:text-foreground">
-          View All
+        View All
         </Link>
       </div>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Link
-          v-for="category in categories"
-          :key="category.id"
-          :href="`/shop?category=${category.slug}`"
-          class="group relative aspect-square overflow-hidden rounded-lg bg-muted"
-        >
-          <div class="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent"></div>
-          <div class="absolute inset-0 flex items-end p-4">
-            <h3 class="text-lg font-medium group-hover:text-primary transition-colors">
-              {{ category.name }}
-            </h3>
-          </div>
+        <Link v-for="category in categories" :key="category.id" :href="`/shop?category=${category.slug}`"
+          class="group relative aspect-square overflow-hidden rounded-lg bg-muted">
+        <div class="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent"></div>
+        <div class="absolute inset-0 flex items-end p-4">
+          <h3 class="text-lg font-medium group-hover:text-primary transition-colors">
+            {{ category.name }}
+          </h3>
+        </div>
         </Link>
       </div>
     </section>
@@ -59,10 +56,7 @@
         <h2 class="text-2xl font-bold">Featured Products</h2>
         <div class="flex items-center gap-2">
           <!-- Filters -->
-          <select
-            v-model="filters.sort"
-            class="h-9 rounded-md border bg-background px-3 text-sm"
-          >
+          <select v-model="filters.sort" class="h-9 rounded-md border bg-background px-3 text-sm">
             <option value="latest">Latest</option>
             <option value="price_asc">Price: Low to High</option>
             <option value="price_desc">Price: High to Low</option>
@@ -72,11 +66,7 @@
 
       <!-- Products Grid -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-        <ProductCard
-          v-for="product in products.data"
-          :key="product.id"
-          :product="product"
-        />
+        <ProductCard v-for="product in products.data" :key="product.id" :product="product" />
       </div>
 
       <!-- Pagination -->
@@ -129,7 +119,7 @@ interface Category {
 
 interface Props {
   store: Store;
-  user: any;
+  customer: any;
   cartItemsCount: number;
   categories: Category[];
   products: {

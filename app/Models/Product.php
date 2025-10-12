@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Product extends Model
 {
     use HasEncryptedSlug;
+
     protected $fillable = [
         'store_id',
         'category_id',
@@ -24,6 +25,10 @@ class Product extends Model
     protected $casts = [
         'price' => 'decimal:2',
         'is_active' => 'boolean',
+    ];
+    
+    protected $appends = [
+        'slug',
     ];
 
     public function store(): BelongsTo

@@ -1,4 +1,8 @@
 <template>
+
+  <Head :title="store.name" />
+
+
   <div class="min-h-screen bg-background">
     <!-- Header -->
     <header class="sticky top-0 z-40 border-b bg-background/95 backdrop-blur">
@@ -15,41 +19,28 @@
         <div class="flex items-center space-x-4">
           <!-- Search -->
           <div class="hidden md:flex relative">
-            <input
-              type="search"
-              placeholder="Search products..."
-              class="w-64 h-9 px-3 py-2 text-sm rounded-md bg-input"
-            />
+            <input type="search" placeholder="Search products..."
+              class="w-64 h-9 px-3 py-2 text-sm rounded-md bg-input" />
           </div>
 
           <!-- Cart -->
-          <Link
-            href="/cart"
-            class="relative inline-flex items-center justify-center rounded-md p-2 text-foreground/80 hover:text-foreground"
-          >
-            <ShoppingCart class="h-5 w-5" />
-            <span
-              v-if="cartItemsCount"
-              class="absolute -top-1 -right-1 h-4 min-w-4 rounded-full bg-primary text-xs text-primary-foreground flex items-center justify-center px-1"
-            >
-              {{ cartItemsCount }}
-            </span>
+          <Link href="/cart"
+            class="relative inline-flex items-center justify-center rounded-md p-2 text-foreground/80 hover:text-foreground">
+          <ShoppingCart class="h-5 w-5" />
+          <span v-if="cartItemsCount"
+            class="absolute -top-1 -right-1 h-4 min-w-4 rounded-full bg-primary text-xs text-primary-foreground flex items-center justify-center px-1">
+            {{ cartItemsCount }}
+          </span>
           </Link>
 
-          <!-- User Menu -->
-          <UserMenu v-if="user" :user="user" />
+          <CustomerMenu v-if="customer" :customer="customer" :cart-items-count="cartItemsCount" :store="store" />
           <template v-else>
-            <Link
-              href="/login"
-              class="text-foreground/80 hover:text-foreground"
-            >
-              Login
+            <Link :href="route('customer.login', { storeSlug: store.slug })"
+              class="text-foreground/80 hover:text-foreground">
+            Login
             </Link>
-            <Link
-              href="/register"
-              class="btn-primary"
-            >
-              Sign up
+            <Link :href="route('customer.register', { storeSlug: store.slug })" class="btn-primary">
+            Sign up
             </Link>
           </template>
         </div>
@@ -80,17 +71,17 @@
             <ul class="space-y-2">
               <li>
                 <Link href="/shop" class="text-sm text-foreground/70 hover:text-foreground">
-                  Shop
+                Shop
                 </Link>
               </li>
               <li>
                 <Link href="/categories" class="text-sm text-foreground/70 hover:text-foreground">
-                  Categories
+                Categories
                 </Link>
               </li>
               <li>
                 <Link href="/cart" class="text-sm text-foreground/70 hover:text-foreground">
-                  Cart
+                Cart
                 </Link>
               </li>
             </ul>
@@ -102,17 +93,17 @@
             <ul class="space-y-2">
               <li>
                 <Link href="/contact" class="text-sm text-foreground/70 hover:text-foreground">
-                  Contact Us
+                Contact Us
                 </Link>
               </li>
               <li>
                 <Link href="/shipping" class="text-sm text-foreground/70 hover:text-foreground">
-                  Shipping Information
+                Shipping Information
                 </Link>
               </li>
               <li>
                 <Link href="/returns" class="text-sm text-foreground/70 hover:text-foreground">
-                  Returns & Exchanges
+                Returns & Exchanges
                 </Link>
               </li>
             </ul>
@@ -125,11 +116,8 @@
               Subscribe to our newsletter for updates and exclusive offers.
             </p>
             <form class="flex gap-2">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                class="flex-1 h-9 px-3 py-2 text-sm rounded-md bg-input"
-              />
+              <input type="email" placeholder="Enter your email"
+                class="flex-1 h-9 px-3 py-2 text-sm rounded-md bg-input" />
               <button type="submit" class="btn-primary">
                 Subscribe
               </button>
@@ -147,12 +135,12 @@
 </template>
 
 <script setup>
-import { Link } from '@inertiajs/vue3'
+import { Link, Head } from '@inertiajs/vue3'
 import { ShoppingCart } from 'lucide-vue-next'
-import UserMenu from '@/components/UserMenu.vue'
+import CustomerMenu from '../../components/shop/CustomerMenu.vue';
 
 defineProps({
-  user: {
+  customer: {
     type: Object,
     default: null
   },
@@ -160,9 +148,11 @@ defineProps({
     type: Number,
     default: 0
   },
-    store: {
-        type: Object,
-        required: true
-    }
+  store: {
+    type: Object,
+    required: true
+  }
 })
+
+
 </script>

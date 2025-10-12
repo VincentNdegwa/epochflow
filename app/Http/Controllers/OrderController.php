@@ -30,8 +30,9 @@ class OrderController extends Controller
         ]);
     }
 
-    public function show(Order $order)
+    public function show(Request $request)
     {
+        $order = Order::findBySlug($request->slug);
         \Illuminate\Support\Facades\Gate::authorize('view', $order);
 
         return Inertia::render('Orders/Show', [

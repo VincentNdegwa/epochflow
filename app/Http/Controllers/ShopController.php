@@ -10,46 +10,6 @@ use Inertia\Inertia;
 
 class ShopController extends Controller
 {
-    public function index(Request $request)
-    {
-        $query = Product::with(['category', 'images'])
-            ->where('is_active', true);
-
-        // Apply category filter
-        if ($request->category) {
-            $query->whereHas('category', function ($q) use ($request) {
-                $q->where('slug', $request->category);
-            });
-        }
-
-        // Apply sorting
-        switch ($request->sort) {
-            case 'price_asc':
-                $query->orderBy('price', 'asc');
-                break;
-            case 'price_desc':
-                $query->orderBy('price', 'desc');
-                break;
-            default:
-                $query->latest();
-                break;
-        }
-
-        $products = $query->paginate(12);
-        $categories = Category::all();
-
-        $cartItemsCount = 0;
-        if (auth()->check()) {
-            $cartItemsCount = CartItem::where('user_id', auth()->id())->count();
-        }
-
-        return Inertia::render('Shop/Index', [
-            'products' => $products,
-            'categories' => $categories,
-            'filters' => $request->only(['category', 'sort']),
-            'cartItemsCount' => $cartItemsCount
-        ]);
-    }
 
     public function show(Product $product)
     {

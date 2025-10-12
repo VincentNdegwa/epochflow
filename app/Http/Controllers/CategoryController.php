@@ -38,8 +38,10 @@ class CategoryController extends Controller
             ->with('success', 'Category created successfully.');
     }
 
-    public function edit(Category $category)
+    public function edit(Request $request)
     {
+        $category = Category::findBySlug($request->slug);
+
         return Inertia::render('Categories/Form', [
             'category' => $category
         ]);

@@ -10,8 +10,7 @@ class CustomerController extends Controller
 {
     public function index()
     {
-        $customers = Customer::with('user')
-            ->latest()
+        $customers = Customer::latest()
             ->paginate(10);
 
         return Inertia::render('Customers/Index', [
@@ -19,8 +18,10 @@ class CustomerController extends Controller
         ]);
     }
 
-    public function show(Customer $customer)
+    public function show(Request $request)
     {
+        $customer = Customer::findBySlug($request->slug);
+
         return Inertia::render('Customers/Show', [
             'customer' => $customer->load(['user', 'user.orders'])
         ]);

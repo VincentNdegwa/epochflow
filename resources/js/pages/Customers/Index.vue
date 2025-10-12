@@ -15,15 +15,14 @@ import { type BreadcrumbItem } from '@/types';
 
 interface Customer {
   id: number;
+  slug: string;
   phone: string;
   city: string;
   state: string;
   country: string;
-  user: {
-    name: string;
-    email: string;
-    orders_count: number;
-  };
+  name: string;
+  email: string;
+  orders_count: number;
 }
 
 interface Props {
@@ -45,6 +44,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 </script>
 
 <template>
+
   <Head title="Customers" />
 
   <AppLayout :breadcrumbs="breadcrumbs">
@@ -74,8 +74,8 @@ const breadcrumbs: BreadcrumbItem[] = [
                     <User class="h-5 w-5 text-muted-foreground" />
                   </div>
                   <div>
-                    <div class="font-medium">{{ customer.user.name }}</div>
-                    <div class="text-sm text-muted-foreground">{{ customer.user.email }}</div>
+                    <div class="font-medium">{{ customer.name }}</div>
+                    <div class="text-sm text-muted-foreground">{{ customer.email }}</div>
                   </div>
                 </div>
               </DataTableCell>
@@ -84,15 +84,11 @@ const breadcrumbs: BreadcrumbItem[] = [
                 <div>{{ customer.city }}, {{ customer.state }}</div>
                 <div class="text-muted-foreground">{{ customer.country }}</div>
               </DataTableCell>
-              <DataTableCell>{{ customer.user.orders_count ?? 0 }} orders</DataTableCell>
+              <DataTableCell>{{ customer.orders_count ?? 0 }} orders</DataTableCell>
               <DataTableCell>
                 <div class="flex items-center justify-end gap-2">
-                  <Link
-                    :href="`/customers/${customer.id}`"
-                    class="rounded-md p-2 hover:bg-accent"
-                    title="View Details"
-                  >
-                    <Eye class="h-4 w-4" />
+                  <Link :href="`/customers/${customer.slug}`" class="rounded-md p-2 hover:bg-accent" title="View Details">
+                  <Eye class="h-4 w-4" />
                   </Link>
                 </div>
               </DataTableCell>
