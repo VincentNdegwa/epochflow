@@ -136,7 +136,11 @@ function updateQuantity(id: number, qty: number) {
 
                         <div>
                             <a
-                                :href="route('checkout.create', { storeSlug: props.store.slug })"
+                                :href="
+                                    route('checkout.create', {
+                                        storeSlug: props.store.slug,
+                                    })
+                                "
                                 class="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white"
                                 >Proceed to checkout</a
                             >
