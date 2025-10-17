@@ -2,6 +2,7 @@
 import AppLayout from '@/layouts/app/AppSidebarLayout.vue';
 import type { BreadcrumbItemType } from '@/types';
 import { usePage } from '@inertiajs/vue3';
+import ToastLayout from './ToastLayout.vue';
 
 interface Props {
     breadcrumbs?: BreadcrumbItemType[];
@@ -18,7 +19,9 @@ if (!hasStore) {
 </script>
 
 <template>
-    <AppLayout :breadcrumbs="breadcrumbs">
-        <slot />
-    </AppLayout>
+    <ToastLayout>
+        <AppLayout :breadcrumbs="breadcrumbs">
+            <slot />
+        </AppLayout>
+    </ToastLayout>
 </template>

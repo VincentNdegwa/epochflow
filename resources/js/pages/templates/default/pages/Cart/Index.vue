@@ -60,7 +60,7 @@ function updateQuantity(id: number, qty: number) {
                         <img
                             :src="
                                 item.product.primary_image ||
-                                '/storage/placeholder.png'
+                                '/images/placeholder.png'
                             "
                             alt=""
                             class="h-20 w-20 rounded-md object-cover"

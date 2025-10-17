@@ -40,6 +40,7 @@ Route::prefix('store/{storeSlug}')->group(function () {
     Route::get('checkout', [\App\Http\Controllers\CustomerOrderController::class, 'create'])->name('checkout.create');
     Route::post('checkout', [\App\Http\Controllers\CustomerOrderController::class, 'store'])->name('checkout.store');
     Route::get('checkout/pay/{order_id}', [\App\Http\Controllers\CustomerOrderController::class, 'pay'])->name('checkout.pay');
+    Route::get('products/{slug}', [\App\Http\Controllers\ShopController::class, 'show'])->name('store.products.show')->where('slug', '.*'); // Allow encrypted slug format
 
     Route::get('orders', [\App\Http\Controllers\CustomerOrderController::class, 'index'])->name('customer.orders.index');
     Route::get('orders/{slug}', [\App\Http\Controllers\CustomerOrderController::class, 'show'])->name('customer.orders.show');

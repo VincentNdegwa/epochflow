@@ -87,12 +87,7 @@ function addToCart() {
         <div class="mt-4 flex-1">
             <h3 class="line-clamp-2 text-sm font-semibold text-gray-800">
                 <Link
-                    :href="
-                        route('shop.products.show', {
-                            slug: storeSlug,
-                            productId: product.id,
-                        })
-                    "
+                    :href="route('store.products.show', { storeSlug: storeSlug, slug: product.slug })"
                     class="hover:underline"
                 >
                     {{ product.name }}

@@ -49,12 +49,18 @@ export interface Customer {
     billing_state: string | null;
     billing_zip: string | null;
     billing_country: string | null;
+
+    shipping_address: string | null;
+    shipping_city: string | null;
+    shipping_state: string | null;
+    shipping_zip_code: string | null;
+    shipping_country: string | null;
 }
 
 export interface ProductImage {
     id: number;
     product_id: number;
-    url: string;
+    path: string;
     created_at: string;
     updated_at: string;
 }
@@ -67,6 +73,9 @@ export interface Product {
     price: number;
     store_id: number;
     category_id: number;
+    user_id: number;
+    stock: number;
+    is_active: boolean;
     created_at: string;
     updated_at: string;
     store?: Store;

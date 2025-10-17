@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { usePage } from '@inertiajs/vue3';
 import { CheckCircle, Info, X, XCircle } from 'lucide-vue-next';
-import { ref, watch } from 'vue';
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
 
 interface Toast {
     id: string;
@@ -16,26 +16,37 @@ function pushToast(type: Toast['type'], message: string) {
     const id = Date.now().toString() + Math.random().toString(36).slice(2, 6);
     const t: Toast = { id, type, message };
     toasts.value.push(t);
-    // auto remove after 4s
     setTimeout(() => {
         toasts.value = toasts.value.filter((x) => x.id !== id);
     }, 4000);
 }
 
-// access flash via a safe any-cast to avoid TS errors from unknown page.props typing
-watch(
-    () => (page.props as any).flash?.success,
-    (val) => {
-        if (val) pushToast('success', String(val));
-    },
-);
+function pushFlashToasts() {
+    const flash = (page.props as any).flash ?? {};
+    if (flash.success) pushToast('success', String(flash.success));
+    if (flash.error) pushToast('error', String(flash.error));
+}
 
-watch(
-    () => (page.props as any).flash?.error,
-    (val) => {
-        if (val) pushToast('error', String(val));
-    },
-);
+onMounted(() => {
+    // show any flash present on initial render
+    pushFlashToasts();
+    // register Inertia success if available (fires on every Inertia visit)
+    const inertia = (window as any).Inertia;
+    if (inertia && inertia.on) inertia.on('success', pushFlashToasts);
+    // fallback: watch page.props object — Inertia will replace page.props on navigation
+    // this catches cases where window.Inertia isn't available in the environment.
+    watch(
+        () => (page.props as any),
+        () => {
+            pushFlashToasts();
+        },
+    );
+});
+
+onBeforeUnmount(() => {
+    const inertia = (window as any).Inertia;
+    if (inertia && inertia.off) inertia.off('success', pushFlashToasts);
+});
 </script>
 
 <template>

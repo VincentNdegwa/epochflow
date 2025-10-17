@@ -155,6 +155,20 @@ class CustomerOrderController extends Controller
                     $item->product->decrement('stock', $item->quantity);
                 }
 
+                $customer->fill([
+                    'billing_address' => $validated['billing_address'] ?? null,
+                    'billing_city' => $validated['billing_city'] ?? null,
+                    'billing_state' => $validated['billing_state'] ?? null,
+                    'billing_zip_code' => $validated['billing_zip_code'] ?? null,
+                    'billing_country' => $validated['billing_country'] ?? null,
+                    'shipping_address' => $validated['shipping_address'] ?? null,
+                    'shipping_city' => $validated['shipping_city'] ?? null,
+                    'shipping_state' => $validated['shipping_state'] ?? null,
+                    'shipping_zip_code' => $validated['shipping_zip_code'] ?? null,
+                    'shipping_country' => $validated['shipping_country'] ?? null,
+                ]);
+                $customer->save();
+
                 DB::commit();
             } catch (\Throwable $e) {
                 DB::rollBack();

@@ -208,7 +208,7 @@ const locationText = computed(() => (props.store as any)?.location ?? '');
                                                 store.banner_url ||
                                                 store.logo_url ||
                                                 bannerJpg ||
-                                                '/storage/placeholder.png'
+                                                '/images/placeholder.png'
                                             "
                                             alt="Store banner"
                                             class="h-full w-full object-cover"

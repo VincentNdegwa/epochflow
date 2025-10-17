@@ -187,7 +187,7 @@ watch([selectedCategory, selectedSort], ([category, sort]) => {
                             <img
                                 :src="
                                     store.banner_url ||
-                                    '/storage/placeholder.png'
+                                    '/images/placeholder.png'
                                 "
                                 alt="banner"
                                 class="h-full w-full object-cover object-center opacity-90"

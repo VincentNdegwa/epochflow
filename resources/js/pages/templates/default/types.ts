@@ -40,6 +40,18 @@ export interface Product {
     primary_image?: string;
 }
 
+export interface ProductWithImages extends Product {
+    images: ProductImage[];
+}
+
+export interface ProductImage {
+    id: number;
+    product_id: number;
+    path: string;
+    is_primary: boolean;
+    order: number
+}
+
 export interface Customer {
     id: number;
     name: string;

@@ -2,7 +2,7 @@
 import { useForm } from '@inertiajs/vue3';
 import { computed, ref, watch } from 'vue';
 import { route } from 'ziggy-js';
-import { Store } from '../../../../../types';
+import { Customer, Store } from '../../../../../types';
 import ShopLayout from '../../layouts/ShopLayout.vue';
 
 interface CartItem {
@@ -15,7 +15,7 @@ const props = defineProps<{
     cartItems: CartItem[];
     total: number;
     store: Store;
-    customer: any;
+    customer: Customer;
 }>();
 
 const sameAsBilling = ref(false);
@@ -29,16 +29,7 @@ const SHIPPING_COSTS: Record<string, number> = {
 };
 
 const form = useForm({
-    billing_address: '',
-    billing_city: '',
-    billing_state: '',
-    billing_zip_code: '',
-    billing_country: '',
-    shipping_address: '',
-    shipping_city: '',
-    shipping_state: '',
-    shipping_zip_code: '',
-    shipping_country: '',
+    ...props.customer,
     notes: '',
     payment_method: 'cod',
     coupon: '',
