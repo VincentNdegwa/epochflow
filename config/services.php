@@ -47,6 +47,13 @@ return [
         'redirect' => env('META_REDIRECT'),
     ],
 
+    'paypal' => [
+        'client_id' => env('PAYPAL_CLIENT_ID'),
+        'client_secret' => env('PAYPAL_SECRET'),
+        'bn_code' => env('PAYPAL_BN_CODE'),
+        'sandbox' => env('PAYPAL_SANDBOX', true),
+    ],
+
     // Toggle to force Socialite into stateless mode (useful for local testing).
     'socialite_stateless' => env('SOCIALITE_STATELESS', false),
 

@@ -19,8 +19,10 @@ import {
     ShoppingBag,
     Store,
     Users,
+    Settings,
 } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
+import NavFooter from './NavFooter.vue';
 
 const mainNavItems: NavItem[] = [
     {
@@ -49,6 +51,16 @@ const mainNavItems: NavItem[] = [
         icon: Store,
     },
 ];
+
+
+const navFooter: NavItem[] = [
+    {
+        title: 'Integrations',
+        href: '/integrations',
+        icon: Settings,
+    },
+];
+
 </script>
 
 <template>
@@ -70,6 +82,7 @@ const mainNavItems: NavItem[] = [
         </SidebarContent>
 
         <SidebarFooter>
+            <NavFooter :items="navFooter" />
             <NavUser />
         </SidebarFooter>
     </Sidebar>

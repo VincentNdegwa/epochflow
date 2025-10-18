@@ -4,6 +4,8 @@ use App\Http\Controllers\Auth\CustomerAuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\Integration\IntegrationController;
+use App\Http\Controllers\Integration\PaymentIntegrationController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ShopController;
@@ -47,6 +49,20 @@ Route::prefix('store/{storeSlug}')->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
+    // Integrations
+    Route::prefix('integrations')->name('integrations.')->group(function () {
+        Route::get('/', [IntegrationController::class, 'index'])->name('index');
+        
+        // Payment Integrations
+        Route::prefix('payments')->name('payments.')->group(function () {
+            Route::get('/{provider}/configure', [PaymentIntegrationController::class, 'configure'])->name('configure');
+        });
+
+        Route::prefix('paypal')->name('paypal.')->group(function () {
+            Route::get('/onboarding', [\App\Http\Controllers\Integration\PaypalController::class, 'onboarding'])->name('onboarding');
+            Route::get('/return', [\App\Http\Controllers\Integration\PaypalController::class, 'handleReturn'])->name('onboarding.return');
+        });
+    });
 
     // Checkout & Orders
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
