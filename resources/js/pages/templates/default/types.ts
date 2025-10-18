@@ -49,7 +49,7 @@ export interface ProductImage {
     product_id: number;
     path: string;
     is_primary: boolean;
-    order: number
+    order: number;
 }
 
 export interface Customer {

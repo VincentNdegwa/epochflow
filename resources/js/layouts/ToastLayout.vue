@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { usePage } from '@inertiajs/vue3';
 import { CheckCircle, Info, X, XCircle } from 'lucide-vue-next';
-import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 
 interface Toast {
     id: string;
@@ -36,7 +36,7 @@ onMounted(() => {
     // fallback: watch page.props object — Inertia will replace page.props on navigation
     // this catches cases where window.Inertia isn't available in the environment.
     watch(
-        () => (page.props as any),
+        () => page.props as any,
         () => {
             pushFlashToasts();
         },

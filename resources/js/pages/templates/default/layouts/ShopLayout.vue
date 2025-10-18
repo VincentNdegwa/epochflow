@@ -96,7 +96,7 @@ const locationText = computed(() => (props.store as any)?.location ?? '');
                         <div
                             class="grid grid-cols-1 gap-8 md:grid-cols-2 md:items-center"
                         >
-                            <div class="text-center z-30 md:text-left">
+                            <div class="z-30 text-center md:text-left">
                                 <p
                                     class="inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-white/90"
                                 >

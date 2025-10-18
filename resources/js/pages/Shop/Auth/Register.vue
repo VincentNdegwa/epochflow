@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AuthBase from '@/layouts/AuthLayout.vue';
-import { Form, Head, router } from '@inertiajs/vue3';
+import { Form, Head } from '@inertiajs/vue3';
 import { LoaderCircle } from 'lucide-vue-next';
 
 declare global {
@@ -38,7 +38,9 @@ defineProps<Props>();
         </div>
 
         <Form
-            :action="route('customer.register.attempt', { storeSlug: store.slug })"
+            :action="
+                route('customer.register.attempt', { storeSlug: store.slug })
+            "
             method="post"
             :reset-on-success="['password', 'password_confirmation']"
             v-slot="{ errors, processing }"
@@ -144,8 +146,8 @@ defineProps<Props>();
 
             <div class="text-center text-sm text-muted-foreground">
                 Already have an account?
-                <TextLink 
-                    :href="route('customer.login', { storeSlug: store.slug })" 
+                <TextLink
+                    :href="route('customer.login', { storeSlug: store.slug })"
                     :tabindex="8"
                 >
                     Log in

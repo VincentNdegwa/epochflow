@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import { Head, Link, router } from '@inertiajs/vue3';
-import { Edit, Trash2, Plus } from 'lucide-vue-next';
-import AppLayout from '@/layouts/AppLayout.vue';
 import Pagination from '@/components/Pagination.vue';
 import { Button } from '@/components/ui/button';
 import {
     DataTable,
-    DataTableHeader,
     DataTableBody,
-    DataTableRow,
     DataTableCell,
+    DataTableHeader,
     DataTableHeaderCell,
+    DataTableRow,
 } from '@/components/ui/data-table';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
+import { Head, Link, router } from '@inertiajs/vue3';
+import { Edit, Plus, Trash2 } from 'lucide-vue-next';
 
 interface Category {
     id: number;
@@ -54,18 +54,21 @@ const deleteCategory = (category: Category) => {
 </script>
 
 <template>
-
     <Head title="Categories" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+        <div
+            class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
+        >
             <!-- Header -->
             <div class="flex items-center justify-between">
-                <h1 class="text-2xl font-semibold tracking-tight">Categories</h1>
+                <h1 class="text-2xl font-semibold tracking-tight">
+                    Categories
+                </h1>
                 <Button asChild>
                     <Link href="/categories/create">
-                    <Plus class="mr-2 h-4 w-4" />
-                    Add Category
+                        <Plus class="mr-2 h-4 w-4" />
+                        Add Category
                     </Link>
                 </Button>
             </div>
@@ -76,38 +79,72 @@ const deleteCategory = (category: Category) => {
                     <DataTableHeader>
                         <DataTableRow>
                             <DataTableHeaderCell>Name</DataTableHeaderCell>
-                            <DataTableHeaderCell>Description</DataTableHeaderCell>
+                            <DataTableHeaderCell
+                                >Description</DataTableHeaderCell
+                            >
                             <DataTableHeaderCell>Products</DataTableHeaderCell>
                             <DataTableHeaderCell>Status</DataTableHeaderCell>
-                            <DataTableHeaderCell align="right">Actions</DataTableHeaderCell>
+                            <DataTableHeaderCell align="right"
+                                >Actions</DataTableHeaderCell
+                            >
                         </DataTableRow>
                     </DataTableHeader>
                     <DataTableBody>
-                        <DataTableRow v-for="category in categories.data" :key="category.id">
+                        <DataTableRow
+                            v-for="category in categories.data"
+                            :key="category.id"
+                        >
                             <DataTableCell>
-                                <div class="font-medium">{{ category.name }}</div>
+                                <div class="font-medium">
+                                    {{ category.name }}
+                                </div>
                             </DataTableCell>
                             <DataTableCell>
                                 <div class="text-sm text-muted-foreground">
-                                    {{ category.description || 'No description' }}
+                                    {{
+                                        category.description || 'No description'
+                                    }}
                                 </div>
                             </DataTableCell>
-                            <DataTableCell>{{ category.products_count }} products</DataTableCell>
+                            <DataTableCell
+                                >{{
+                                    category.products_count
+                                }}
+                                products</DataTableCell
+                            >
                             <DataTableCell>
-                                <span class="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium"
-                                    :class="category.is_active ? 'bg-green-500/10 text-green-500' : 'bg-yellow-500/10 text-yellow-500'">
-                                    {{ category.is_active ? 'Active' : 'Inactive' }}
+                                <span
+                                    class="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium"
+                                    :class="
+                                        category.is_active
+                                            ? 'bg-green-500/10 text-green-500'
+                                            : 'bg-yellow-500/10 text-yellow-500'
+                                    "
+                                >
+                                    {{
+                                        category.is_active
+                                            ? 'Active'
+                                            : 'Inactive'
+                                    }}
                                 </span>
                             </DataTableCell>
                             <DataTableCell>
-                                <div class="flex items-center justify-end gap-2">
-                                    <Link :href="`/categories/${category.slug}/edit`"
-                                        class="rounded-md p-2 hover:bg-accent" title="Edit">
-                                    <Edit class="h-4 w-4" />
+                                <div
+                                    class="flex items-center justify-end gap-2"
+                                >
+                                    <Link
+                                        :href="`/categories/${category.slug}/edit`"
+                                        class="rounded-md p-2 hover:bg-accent"
+                                        title="Edit"
+                                    >
+                                        <Edit class="h-4 w-4" />
                                     </Link>
-                                    <button @click="deleteCategory(category)"
-                                        class="rounded-md p-2 hover:bg-accent text-destructive" title="Delete"
-                                        :disabled="category.products_count > 0">
+                                    <button
+                                        @click="deleteCategory(category)"
+                                        class="rounded-md p-2 text-destructive hover:bg-accent"
+                                        title="Delete"
+                                        :disabled="category.products_count > 0"
+                                    >
                                         <Trash2 class="h-4 w-4" />
                                     </button>
                                 </div>

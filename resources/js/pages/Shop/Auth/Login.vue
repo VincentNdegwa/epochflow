@@ -20,8 +20,8 @@ interface Props {
 defineProps<Props>();
 
 const form = {
-    remember: false
-}
+    remember: false,
+};
 </script>
 
 <template>
@@ -77,9 +77,9 @@ const form = {
 
                 <div class="flex items-center justify-between">
                     <Label for="remember" class="flex items-center space-x-3">
-                        <Checkbox 
-                            id="remember" 
-                            name="remember" 
+                        <Checkbox
+                            id="remember"
+                            name="remember"
                             :tabindex="3"
                             v-model="form.remember"
                         />
@@ -103,8 +103,10 @@ const form = {
 
             <div class="text-center text-sm text-muted-foreground">
                 Don't have an account?
-                <TextLink 
-                    :href="route('customer.register', { storeSlug: store.slug })" 
+                <TextLink
+                    :href="
+                        route('customer.register', { storeSlug: store.slug })
+                    "
                     :tabindex="5"
                 >
                     Sign up

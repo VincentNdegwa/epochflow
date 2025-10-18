@@ -13,14 +13,12 @@ import {
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { 
-    LayoutGrid, 
-    Package, 
+import {
+    LayoutGrid,
+    Package,
     ShoppingBag,
-    ShoppingCart,
     Store,
     Users,
-    LineChart
 } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
@@ -49,7 +47,7 @@ const mainNavItems: NavItem[] = [
         title: 'Stores',
         href: '/stores',
         icon: Store,
-    }
+    },
 ];
 </script>
 
