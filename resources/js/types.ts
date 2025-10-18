@@ -79,7 +79,7 @@ export interface Product {
     created_at: string;
     updated_at: string;
     store?: Store;
-    category?: Category;
+    category: Category;
     images: ProductImage[];
     primary_image: string;
 }
@@ -119,9 +119,23 @@ export interface Order {
     status: string;
     created_at: string;
     updated_at: string;
+    billing_address: string | null;
+    billing_city: string | null;
+    billing_state: string | null;
+    billing_zip_code: string | null;
+    billing_country: string | null;
+    shipping_address: string | null;
+    shipping_city: string | null;
+    shipping_state: string | null;
+    shipping_zip_code: string | null;
+    shipping_country: string | null;
     user?: User;
     store?: Store;
-    items?: OrderItem[];
+    items: OrderItem[];
+}
+
+export interface OrdertWithCustomer extends Order {
+    customer: Customer;
 }
 
 export interface OrderItem {
@@ -132,5 +146,5 @@ export interface OrderItem {
     price: number;
     created_at: string;
     updated_at: string;
-    product?: Product;
+    product: Product;
 }

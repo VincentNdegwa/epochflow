@@ -80,7 +80,7 @@
                                         </div>
                                         <div class="text-right">
                                             <div class="font-medium">
-                                                ${{ item.subtotal }}
+                                                ${{ item.price }}
                                             </div>
                                             <div
                                                 class="text-sm text-foreground/70"
@@ -185,13 +185,12 @@
     </AppLayout>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Link, router } from '@inertiajs/vue3';
+import type { OrdertWithCustomer } from '../../types';
 
-const props = defineProps({
-    order: Object,
-});
+const props = defineProps<{ order: OrdertWithCustomer }>();
 
 const cancelOrder = () => {
     if (

@@ -8,7 +8,7 @@ interface NavItem {
     href: string;
 }
 
-const props = defineProps<{
+defineProps<{
     store: Store;
     navigation: NavItem[];
 }>();

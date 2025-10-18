@@ -74,6 +74,10 @@
                             <MenuItem v-slot="{ active }">
                                 <button
                                     @click="logout"
+                                    :class="[
+                                        active ? 'bg-gray-100' : '',
+                                        'group',
+                                    ]"
                                     class="flex w-full items-center px-2 py-2 text-left text-sm"
                                 >
                                     <LogOut

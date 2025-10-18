@@ -129,7 +129,7 @@ function placeOrder() {
         form.shipping_country = form.billing_country;
     }
 
-    let isValid = validate();
+    const isValid = validate();
     console.log('isValid', isValid);
 
     if (!isValid) {

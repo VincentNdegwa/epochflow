@@ -49,15 +49,7 @@ const shortName = computed(() => {
     return n.split(' ')[0] || n;
 });
 
-const initials = computed(() => {
-    const parts = (props.store?.name ?? '').split(' ').filter(Boolean);
-    return (
-        parts
-            .map((p) => p[0])
-            .slice(0, 2)
-            .join('') || (props.store?.name ?? '').slice(0, 2)
-    ).toUpperCase();
-});
+
 
 const rating = computed(() => (props.store as any)?.rating ?? '4.8');
 const deliveryEstimate = computed(

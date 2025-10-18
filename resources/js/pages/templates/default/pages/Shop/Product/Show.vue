@@ -4,7 +4,7 @@ import { Heart, Share2 } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import { route } from 'ziggy-js';
 import { Product, Store } from '../../../../../../types';
-import ShopLayout from '../../../layouts/ShopLayout.vue';
+import NormalLayout from '../../../layouts/NormalLayout.vue';
 
 const props = defineProps<{
     product: Product;
@@ -15,7 +15,6 @@ const props = defineProps<{
 }>();
 
 const price = computed(() => props.product?.price ?? 0);
-const quantity = ref(1);
 const selectedImage = ref(
     props.product.primary_image || '/images/placeholder.png',
 );
@@ -24,12 +23,6 @@ const zoomPosition = ref({ x: 0, y: 0 });
 
 const allImages = computed(() => {
     const images = [...(props.product.images || [])];
-    if (
-        props.product.primary_image &&
-        !images.find((img) => img.path === props.product.primary_image)
-    ) {
-        images.unshift({ id: 'primary', url: props.product.primary_image });
-    }
     return images;
 });
 
@@ -40,22 +33,10 @@ function updateZoom(event: MouseEvent) {
     const y = ((event.clientY - top) / height) * 100;
     zoomPosition.value = { x, y };
 }
-
-function incrementQuantity() {
-    if (props.product.stock && quantity.value < props.product.stock) {
-        quantity.value++;
-    }
-}
-
-function decrementQuantity() {
-    if (quantity.value > 1) {
-        quantity.value--;
-    }
-}
 </script>
 
 <template>
-    <ShopLayout
+    <NormalLayout
         :store="store"
         :customer="customer"
         :cart-items-count="cartItemsCount"
@@ -79,7 +60,7 @@ function decrementQuantity() {
                             <img
                                 :src="selectedImage"
                                 :alt="product.name"
-                                class="object-fit h-full w-full transition duration-500"
+                                class="object-cover h-full w-full transition duration-500"
                                 :class="{ 'scale-110': isZoomed }"
                                 :style="
                                     isZoomed
@@ -261,7 +242,7 @@ function decrementQuantity() {
                 </div>
             </div>
         </div>
-    </ShopLayout>
+    </NormalLayout>
 </template>
 
 <style scoped>

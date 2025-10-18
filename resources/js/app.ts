@@ -23,8 +23,9 @@ const loadTemplateCSS = async () => {
             // console.log(`Loaded template CSS: ${template}`);
 
             return;
-        } catch (e) {
+        } catch (error) {
             console.warn('Template CSS not found, falling back to default CSS');
+            console.error(error);
         }
     }
     await import('../css/app.css');

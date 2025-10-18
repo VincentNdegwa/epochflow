@@ -45,7 +45,7 @@
     </div>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 import { Link, useForm } from '@inertiajs/vue3';
 import { ShoppingCart } from 'lucide-vue-next';
 import { ref } from 'vue';

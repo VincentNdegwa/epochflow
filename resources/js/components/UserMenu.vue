@@ -132,7 +132,7 @@
     </Menu>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue';
 import { Link, router } from '@inertiajs/vue3';
 import {

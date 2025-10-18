@@ -49,25 +49,7 @@ const navigation = [
                 :cart-items-count="props.cartItemsCount || 0"
             />
 
-            <section class="mt-6 pb-8">
-                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div
-                        class="grid grid-cols-1 md:grid-cols-2 md:items-center"
-                    >
-                        <div class="z-30 text-center md:text-left">
-                            <h2 class="text-xl font-semibold text-white">
-                                {{ props.store?.name }}
-                            </h2>
-                            <p
-                                v-if="props.store?.description"
-                                class="mt-2 max-w-2xl text-sm text-white/80"
-                            >
-                                {{ props.store.description }}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </section>
+
         </header>
 
         <main class="relative">
