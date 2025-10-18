@@ -48,8 +48,6 @@ const navigation = [
                 :customer="props.customer"
                 :cart-items-count="props.cartItemsCount || 0"
             />
-
-
         </header>
 
         <main class="relative">

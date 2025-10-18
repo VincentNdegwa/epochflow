@@ -60,7 +60,7 @@ function updateZoom(event: MouseEvent) {
                             <img
                                 :src="selectedImage"
                                 :alt="product.name"
-                                class="object-cover h-full w-full transition duration-500"
+                                class="h-full w-full object-cover transition duration-500"
                                 :class="{ 'scale-110': isZoomed }"
                                 :style="
                                     isZoomed

@@ -265,13 +265,15 @@ watch([selectedCategory, selectedSort], ([category, sort]) => {
                                         'bg-white text-gray-700 shadow-sm hover:bg-gray-50':
                                             !link.active,
                                     }"
-                                > {{ link.label }} </Link>
+                                >
+                                    {{ link.label }}
+                                </Link>
                                 <span
                                     v-else
                                     class="rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-400"
                                 >
-                                <!-- {{ link.label }} -->
-                            </span>
+                                    <!-- {{ link.label }} -->
+                                </span>
                             </template>
                         </div>
                     </div>

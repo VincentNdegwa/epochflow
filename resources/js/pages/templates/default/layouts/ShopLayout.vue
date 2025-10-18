@@ -49,8 +49,6 @@ const shortName = computed(() => {
     return n.split(' ')[0] || n;
 });
 
-
-
 const rating = computed(() => (props.store as any)?.rating ?? '4.8');
 const deliveryEstimate = computed(
     () =>
