@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Store;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -18,7 +17,7 @@ class StoreController extends Controller
             ->paginate(10);
 
         return Inertia::render('Stores/Index', [
-            'stores' => $stores
+            'stores' => $stores,
         ]);
     }
 
@@ -41,7 +40,7 @@ class StoreController extends Controller
         }
 
         if ($request->search) {
-            $search = '%' . $request->search . '%';
+            $search = '%'.$request->search.'%';
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', $search)
                     ->orWhere('description', 'like', $search);
@@ -101,7 +100,7 @@ class StoreController extends Controller
             'filters' => [
                 'category' => $request->category,
                 'sort' => $request->get('sort', 'latest'),
-                'search' => $request->get('search')
+                'search' => $request->get('search'),
             ],
             'customer' => $customer,
             'cartItemsCount' => $cartItemsCount,
@@ -117,13 +116,13 @@ class StoreController extends Controller
                 'string',
                 'max:255',
                 'unique:stores',
-                'regex:/^[a-z0-9-]+$/'
+                'regex:/^[a-z0-9-]+$/',
             ],
             'description' => 'nullable|string',
             'contact_email' => 'nullable|email|max:255',
             'contact_phone' => 'nullable|string|max:20',
             'address' => 'nullable|string',
-            'is_active' => 'boolean'
+            'is_active' => 'boolean',
         ]);
 
         $validated['user_id'] = Auth::id();
@@ -142,7 +141,7 @@ class StoreController extends Controller
         \Illuminate\Support\Facades\Gate::authorize('update', $store);
 
         return Inertia::render('Stores/Form', [
-            'store' => $store
+            'store' => $store,
         ]);
     }
 
@@ -158,14 +157,14 @@ class StoreController extends Controller
                 'required',
                 'string',
                 'max:255',
-                'unique:stores,slug,' . $store->id,
-                'regex:/^[a-z0-9-]+$/'
+                'unique:stores,slug,'.$store->id,
+                'regex:/^[a-z0-9-]+$/',
             ],
             'description' => 'nullable|string',
             'contact_email' => 'nullable|email|max:255',
             'contact_phone' => 'nullable|string|max:20',
             'address' => 'nullable|string',
-            'is_active' => 'boolean'
+            'is_active' => 'boolean',
         ]);
 
         $validated['slug'] = Str::slug(Str::lower($validated['slug']));

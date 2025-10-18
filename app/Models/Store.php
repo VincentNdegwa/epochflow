@@ -16,7 +16,7 @@ class Store extends Model
         'contact_email',
         'contact_phone',
         'address',
-        'is_active'
+        'is_active',
     ];
 
     protected $casts = [

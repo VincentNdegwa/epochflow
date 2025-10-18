@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
 use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -13,7 +13,7 @@ class ProductController extends Controller
     public function index()
     {
         $store = current_store();
-        if (!$store) {
+        if (! $store) {
             return redirect()->back()
                 ->with('error', 'No store context found. Please ensure you are logged in and associated with a store.');
         }
@@ -24,7 +24,7 @@ class ProductController extends Controller
             ->paginate(12);
 
         return Inertia::render('Products/Index', [
-            'products' => $products
+            'products' => $products,
         ]);
     }
 
@@ -33,7 +33,7 @@ class ProductController extends Controller
         $categories = Category::all();
 
         return Inertia::render('Products/Form', [
-            'categories' => $categories
+            'categories' => $categories,
         ]);
     }
 
@@ -45,11 +45,11 @@ class ProductController extends Controller
             'description' => 'required|string',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
-            'is_active' => 'boolean'
+            'is_active' => 'boolean',
         ]);
 
         $store = current_store();
-        if (!$store) {
+        if (! $store) {
             return redirect()->back()
                 ->with('error', 'No store context found. Please ensure you are logged in and associated with a store.');
         }
@@ -65,7 +65,7 @@ class ProductController extends Controller
                 $path = $image->store('products', 'public');
                 $product->images()->create([
                     'path' => $path,
-                    'is_primary' => $product->images()->count() === 0
+                    'is_primary' => $product->images()->count() === 0,
                 ]);
             }
         }
@@ -84,7 +84,7 @@ class ProductController extends Controller
 
         return Inertia::render('Products/Form', [
             'product' => $product->load('images'),
-            'categories' => $categories
+            'categories' => $categories,
         ]);
     }
 
@@ -98,7 +98,7 @@ class ProductController extends Controller
             'description' => 'required|string',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
-            'is_active' => 'boolean'
+            'is_active' => 'boolean',
         ]);
 
         $validated['slug'] = Str::slug($validated['name']);
@@ -110,7 +110,7 @@ class ProductController extends Controller
                 $path = $image->store('products', 'public');
                 $product->images()->create([
                     'path' => $path,
-                    'is_primary' => $product->images()->count() === 0
+                    'is_primary' => $product->images()->count() === 0,
                 ]);
             }
         }

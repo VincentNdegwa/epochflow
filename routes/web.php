@@ -1,13 +1,13 @@
 <?php
 
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\CartController;
-use App\Http\Controllers\OrderController;
-use App\Http\Controllers\ShopController;
-use App\Http\Controllers\CustomerController;
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\StoreController;
 use App\Http\Controllers\Auth\CustomerAuthController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ShopController;
+use App\Http\Controllers\StoreController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -46,17 +46,13 @@ Route::prefix('store/{storeSlug}')->group(function () {
     Route::get('orders/{slug}', [\App\Http\Controllers\CustomerOrderController::class, 'show'])->name('customer.orders.show');
 });
 
-
-
 Route::middleware(['auth'])->group(function () {
-
 
     // Checkout & Orders
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
     Route::get('/orders/{slug}', [OrderController::class, 'show'])->name('orders.show');
     Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
-
 
     // Product Management
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');
@@ -87,6 +83,6 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
 });
 
-require __DIR__ . '/settings.php';
-require __DIR__ . '/auth.php';
-require __DIR__ . '/meta.php';
+require __DIR__.'/settings.php';
+require __DIR__.'/auth.php';
+require __DIR__.'/meta.php';

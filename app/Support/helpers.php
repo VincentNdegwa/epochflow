@@ -27,7 +27,6 @@ if (! function_exists('current_store')) {
             }
         }
 
-
         return null;
     }
 }

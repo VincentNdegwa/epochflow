@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Order extends Model
 {
     use HasEncryptedSlug;
+
     protected $fillable = [
         'store_id',
         'customer_id',
@@ -26,7 +27,7 @@ class Order extends Model
         'shipping_city',
         'shipping_state',
         'shipping_zip_code',
-        'shipping_country'
+        'shipping_country',
     ];
 
     protected $casts = [

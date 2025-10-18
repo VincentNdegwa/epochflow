@@ -4,8 +4,8 @@ namespace App\Models;
 
 use App\Traits\HasEncryptedSlug;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
 {
@@ -19,7 +19,7 @@ class Product extends Model
         'description',
         'price',
         'stock',
-        'is_active'
+        'is_active',
     ];
 
     protected $casts = [
@@ -29,7 +29,7 @@ class Product extends Model
 
     protected $appends = [
         'slug',
-        'primary_image'
+        'primary_image',
     ];
 
     public function getPrimaryImageAttribute(): ?string
@@ -66,6 +66,4 @@ class Product extends Model
     {
         return $this->hasMany(CartItem::class);
     }
-
-  
 }

@@ -18,7 +18,7 @@ class CustomerAuthController extends Controller
         $store = Store::where('slug', $storeSlug)->firstOrFail();
 
         return Inertia::render('Shop/Auth/Login', [
-            'store' => $store
+            'store' => $store,
         ]);
     }
 
@@ -27,7 +27,7 @@ class CustomerAuthController extends Controller
         $store = Store::where('slug', $storeSlug)->firstOrFail();
 
         return Inertia::render('Shop/Auth/Register', [
-            'store' => $store
+            'store' => $store,
         ]);
     }
 
@@ -44,7 +44,7 @@ class CustomerAuthController extends Controller
             ->where('store_id', $store->id)
             ->first();
 
-        if (!$customer) {
+        if (! $customer) {
             return back()->withErrors([
                 'email' => 'The provided credentials do not match our records.',
             ]);
@@ -53,7 +53,7 @@ class CustomerAuthController extends Controller
         if (Auth::guard('customer')->attempt([
             'email' => $credentials['email'],
             'password' => $credentials['password'],
-            'store_id' => $store->id
+            'store_id' => $store->id,
         ])) {
             $request->session()->regenerate();
 

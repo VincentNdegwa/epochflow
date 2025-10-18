@@ -3,7 +3,6 @@
 namespace App\Traits;
 
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Str;
 
 trait HasEncryptedSlug
 {
@@ -16,6 +15,7 @@ trait HasEncryptedSlug
     {
         try {
             $id = Crypt::decrypt($slug);
+
             return static::find($id);
         } catch (\Exception $e) {
             return null;

@@ -4,15 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\CartItem;
 use App\Models\Order;
-use App\Models\OrderItem;
-use App\Models\Product;
 use App\Models\Store;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
-use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Inertia\Inertia;
 
 class CustomerOrderController extends Controller
 {
@@ -72,10 +70,10 @@ class CustomerOrderController extends Controller
             $cartItems = CartItem::with('product')
                 ->where('customer_id', $customer->id)
                 ->get()
-                ->filter(fn($i) => $i->product && $i->product->store_id == $store->id)
+                ->filter(fn ($i) => $i->product && $i->product->store_id == $store->id)
                 ->values();
 
-            $total = $cartItems->sum(fn($item) => $item->product->price * $item->quantity);
+            $total = $cartItems->sum(fn ($item) => $item->product->price * $item->quantity);
         }
 
         $template = $store->template ?? 'default';
@@ -117,7 +115,7 @@ class CustomerOrderController extends Controller
             $cartItems = CartItem::with('product')
                 ->where('customer_id', $customer->id)
                 ->get()
-                ->filter(fn($i) => $i->product && $i->product->store_id == $store->id)
+                ->filter(fn ($i) => $i->product && $i->product->store_id == $store->id)
                 ->values();
 
             if ($cartItems->isEmpty()) {
@@ -130,12 +128,12 @@ class CustomerOrderController extends Controller
                 }
             }
 
-            $total = $cartItems->sum(fn($item) => $item->product->price * $item->quantity);
+            $total = $cartItems->sum(fn ($item) => $item->product->price * $item->quantity);
 
             $orderData = array_merge($validated, [
                 'store_id' => $store->id,
                 'customer_id' => $customer->id,
-                'order_number' => 'ORD-' . Str::upper(Str::random(8)),
+                'order_number' => 'ORD-'.Str::upper(Str::random(8)),
                 'total_amount' => $total,
                 'status' => 'pending',
             ]);
@@ -179,7 +177,7 @@ class CustomerOrderController extends Controller
         } catch (ValidationException $e) {
             throw $e;
         } catch (\Throwable $e) {
-            return redirect()->back()->with('error', 'Failed to create order: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to create order: '.$e->getMessage());
         }
     }
 
@@ -204,7 +202,7 @@ class CustomerOrderController extends Controller
             $order->update(['status' => 'paid']);
 
             CartItem::where('customer_id', $customer->id)
-                ->whereHas('product', fn($q) => $q->where('store_id', $store->id))
+                ->whereHas('product', fn ($q) => $q->where('store_id', $store->id))
                 ->delete();
 
             DB::commit();
@@ -213,7 +211,8 @@ class CustomerOrderController extends Controller
                 ->with('success', 'Payment successful and order placed.');
         } catch (\Throwable $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Payment failed: ' . $e->getMessage());
+
+            return redirect()->back()->with('error', 'Payment failed: '.$e->getMessage());
         }
     }
 }

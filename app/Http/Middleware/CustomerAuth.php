@@ -14,13 +14,13 @@ class CustomerAuth
     {
         $store = Store::where('slug', $request->route('storeSlug'))->first();
 
-        if (!$store) {
+        if (! $store) {
             abort(404);
         }
 
         // Check if customer is logged in and belongs to the current store
         if (
-            !Auth::guard('customer')->check() ||
+            ! Auth::guard('customer')->check() ||
             Auth::guard('customer')->user()->store_id !== $store->id
         ) {
             return redirect()->route('customer.login', ['storeSlug' => $store->slug]);

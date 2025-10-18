@@ -14,7 +14,7 @@ class CustomerController extends Controller
             ->paginate(10);
 
         return Inertia::render('Customers/Index', [
-            'customers' => $customers
+            'customers' => $customers,
         ]);
     }
 
@@ -23,7 +23,7 @@ class CustomerController extends Controller
         $customer = Customer::findBySlug($request->slug);
 
         return Inertia::render('Customers/Show', [
-            'customer' => $customer->load(['user', 'user.orders'])
+            'customer' => $customer->load(['user', 'user.orders']),
         ]);
     }
 }

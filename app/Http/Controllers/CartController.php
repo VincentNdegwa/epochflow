@@ -49,7 +49,7 @@ class CartController extends Controller
     {
         $validated = $request->validate([
             'product_id' => 'required|exists:products,id',
-            'quantity' => 'required|integer|min:1'
+            'quantity' => 'required|integer|min:1',
         ]);
 
         $storeSlug = $request->route('storeSlug');
@@ -74,7 +74,7 @@ class CartController extends Controller
 
         if ($cartItem) {
             $cartItem->update([
-                'quantity' => $cartItem->quantity + $validated['quantity']
+                'quantity' => $cartItem->quantity + $validated['quantity'],
             ]);
         } else {
             CartItem::create($validated);
@@ -94,7 +94,7 @@ class CartController extends Controller
         }
 
         $validated = $request->validate([
-            'quantity' => 'required|integer|min:1'
+            'quantity' => 'required|integer|min:1',
         ]);
 
         $cartItem->update($validated);

@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Store;
-use App\Models\Product;
-use App\Models\Category;
 use App\Models\CartItem;
+use App\Models\Product;
+use App\Models\Store;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -17,10 +16,9 @@ class ShopController extends Controller
         $storeSlug = $request->route('storeSlug');
         $productSlug = $request->route('slug'); // Get slug from route parameter
 
-        
         $store = Store::where('slug', $storeSlug)->firstOrFail();
-        $product = Product::findBySlug($productSlug); 
-        if (!$product->is_active) {
+        $product = Product::findBySlug($productSlug);
+        if (! $product->is_active) {
             abort(404);
         }
 
@@ -44,7 +42,7 @@ class ShopController extends Controller
             'product' => $product->load(['category', 'images']),
             'relatedProducts' => $relatedProducts,
             'cartItemsCount' => $cartItemsCount,
-            'customer' => $customer ?? null
+            'customer' => $customer ?? null,
         ]);
     }
 }

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Order;
 use App\Models\CartItem;
+use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -27,8 +27,8 @@ class OrderController extends Controller
         return Inertia::render('Orders/Index', [
             'orders' => $orders,
             'filters' => [
-                'status' => $request->status ?? ''
-            ]
+                'status' => $request->status ?? '',
+            ],
         ]);
     }
 
@@ -37,7 +37,7 @@ class OrderController extends Controller
         $order = Order::findBySlug($request->slug);
 
         return Inertia::render('Orders/Show', [
-            'order' => $order->load(['items.product.category', 'customer'])
+            'order' => $order->load(['items.product.category', 'customer']),
         ]);
     }
 
@@ -54,7 +54,7 @@ class OrderController extends Controller
             'shipping_state' => 'required|string',
             'shipping_zip_code' => 'required|string',
             'shipping_country' => 'required|string',
-            'notes' => 'nullable|string'
+            'notes' => 'nullable|string',
         ]);
 
         $customer = auth()->guard('customer')->user();
@@ -72,7 +72,7 @@ class OrderController extends Controller
         });
 
         $validated['customer_id'] = $customer?->id;
-        $validated['order_number'] = 'ORD-' . Str::random(10);
+        $validated['order_number'] = 'ORD-'.Str::random(10);
         $validated['total_amount'] = $totalAmount;
         $validated['status'] = 'pending';
 
@@ -83,7 +83,7 @@ class OrderController extends Controller
                 'product_id' => $item->product_id,
                 'quantity' => $item->quantity,
                 'price' => $item->product->price,
-                'subtotal' => $item->product->price * $item->quantity
+                'subtotal' => $item->product->price * $item->quantity,
             ]);
 
             // Decrease product stock

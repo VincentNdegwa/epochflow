@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\CartItem;
 use App\Models\Customer;
-use App\Models\User;
 
 class CartItemPolicy
 {

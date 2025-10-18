@@ -47,10 +47,10 @@ class HandleInertiaRequests extends Middleware
             ],
             'hasStore' => $this->checkIfHasStore($request),
             'flash' => [
-                'success' => fn() => $request->session()->get('success'),
-                'error' => fn() => $request->session()->get('error'),
+                'success' => fn () => $request->session()->get('success'),
+                'error' => fn () => $request->session()->get('error'),
             ],
-            'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true'
+            'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
     }
 
@@ -62,6 +62,7 @@ class HandleInertiaRequests extends Middleware
         if ($request->user()) {
             return $request->user()->stores()->exists();
         }
+
         return false;
     }
 }

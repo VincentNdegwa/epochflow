@@ -11,7 +11,7 @@ class CategoryController extends Controller
     public function index()
     {
         $store = current_store();
-        if (!$store) {
+        if (! $store) {
             return redirect()->back()
                 ->with('error', 'No store context found. Please ensure you are logged in and associated with a store.');
         }
@@ -21,7 +21,7 @@ class CategoryController extends Controller
             ->paginate(10);
 
         return Inertia::render('Categories/Index', [
-            'categories' => $categories
+            'categories' => $categories,
         ]);
     }
 
@@ -35,11 +35,11 @@ class CategoryController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:categories',
             'description' => 'nullable|string',
-            'is_active' => 'boolean'
+            'is_active' => 'boolean',
         ]);
 
         $store = current_store();
-        if (!$store) {
+        if (! $store) {
             return redirect()->back()
                 ->with('error', 'No store context found. Please ensure you are logged in and associated with a store.');
         }
@@ -57,16 +57,16 @@ class CategoryController extends Controller
         $category = Category::findBySlug($request->slug);
 
         return Inertia::render('Categories/Form', [
-            'category' => $category
+            'category' => $category,
         ]);
     }
 
     public function update(Request $request, Category $category)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:categories,name,' . $category->id,
+            'name' => 'required|string|max:255|unique:categories,name,'.$category->id,
             'description' => 'nullable|string',
-            'is_active' => 'boolean'
+            'is_active' => 'boolean',
         ]);
 
         $category->update($validated);
