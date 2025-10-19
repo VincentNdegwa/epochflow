@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Integration;
 
 use App\Http\Controllers\Controller;
+use App\Models\PaymentIntegration;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
@@ -15,8 +16,8 @@ class PaypalController extends Controller
         $payPalService = app()->make(\App\Services\PayPal\PayPalService::class);
 
         $sellerTrackingId = 'UNIQUE_ID_' . time();
-        $yourReturnUrl = route('integrations.paypal.onboarding.return');
-        // $yourReturnUrl = 'https://11b46720b009.ngrok-free.app/integrations/paypal/return';
+        // $yourReturnUrl = route('integrations.paypal.onboarding.return');
+        $yourReturnUrl = 'https://b7b623785e91.ngrok-free.app/integrations/paypal/return';
 
         $referralData = [
             'tracking_id' => $sellerTrackingId,
@@ -78,18 +79,39 @@ class PaypalController extends Controller
     {
         Log::info('PayPal return callback received', $request->all());
 
-        $merchantId = $request->query('merchantId');
+        $trackingId = $request->query('merchantId');
         $paypalMerchantId = $request->query('merchantIdInPayPal');
         $permissionsGranted = $request->query('permissionsGranted');
+        $accountStatus = $request->query('accountStatus');
+        $isEmailConfirmed = $request->query('isEmailConfirmed');
+        $riskStatus = $request->query('riskStatus');
 
         try {
             if ($permissionsGranted === 'true' && $paypalMerchantId) {
-                // Here you would typically:
-                // 1. Save the PayPal merchant info to your database
-                // 2. Update the integration status
-                // 3. Generate and store any necessary tokens
+                $store = current_store();
+
+                $integration = PaymentIntegration::updateOrCreate(
+                    [
+                        'store_id' => $store->id,
+                        'provider' => 'paypal'
+                    ],
+                    [
+                        'provider_id' => $paypalMerchantId,
+                        'status' => 'active',
+                        'is_configured' => true,
+                        'is_enabled' => true,
+                        'metadata' => [
+                            'tracking_id' => $trackingId,
+                            'account_status' => $accountStatus,
+                            'email_confirmed' => $isEmailConfirmed === 'true',
+                            'risk_status' => $riskStatus,
+                            'permissions_granted' => true
+                        ]
+                    ]
+                );
+
+                Log::info('PayPal integration saved successfully', ['integration_id' => $integration->id]);
                 
-                // For now, we'll just redirect with a success message
                 return redirect()->route('integrations.index')->with('success', 'PayPal account connected successfully!');
             }
 
