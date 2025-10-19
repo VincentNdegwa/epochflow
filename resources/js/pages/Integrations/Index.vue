@@ -2,8 +2,12 @@
 import { Head, Link, router } from '@inertiajs/vue3';
 import { CreditCard, Check, ExternalLink } from 'lucide-vue-next';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { computed } from 'vue';
+import { computed, ref, inject } from 'vue';
 import { type BreadcrumbItem } from '@/types';
+import axios from 'axios';
+import { useToast } from '../../composables/useToast';
+
+const $route: any = inject('route');
 
 interface Integration {
     id: string;
@@ -23,7 +27,7 @@ interface IntegrationCategory {
     integrations: Integration[];
 }
 
-const props = defineProps<{
+defineProps<{
     categories: IntegrationCategory[];
 }>();
 
@@ -33,6 +37,37 @@ const breadcrumbs = computed(
             { title: 'Integrations' },
         ] as BreadcrumbItem[],
 );
+
+const isLoading = ref(false);
+const { toast } = useToast();
+
+const configureIntegration = async (integration: Integration) => {
+    if (integration.id === 'paypal') {
+        try {
+            isLoading.value = true;
+            const response = await axios.get($route('integrations.paypal.onboarding'), {
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (response.data.url) {
+                window.open(response.data.url, 'PPFrame');
+                toast.success('PayPal configuration window opened successfully');
+            } else {
+                toast.error('No configuration URL received from PayPal');
+            }
+        } catch (error: any) {
+            const errorMessage = error.response?.data?.message || 'Failed to initiate PayPal setup';
+            toast.error(errorMessage);
+            console.error('Failed to initiate PayPal setup:', error);
+        } finally {
+            isLoading.value = false;
+        }
+    } else {
+        router.visit($route('integrations.payments.configure', { provider: integration.id }));
+    }
+};
 </script>
 
 <template>
@@ -103,12 +138,21 @@ const breadcrumbs = computed(
 
                                     <div class="mt-4 flex items-center justify-between">
                                         <button
-
-                                            @click="router.visit(route('integrations.payments.configure', { provider: integration.id }))"
+                                            @click="configureIntegration(integration)"
                                             class="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
+                                            :disabled="isLoading"
                                         >
-                                            Configure Settings
-                                            <ExternalLink class="h-4 w-4" />
+                                            <template v-if="isLoading">
+                                                <svg class="animate-spin h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                </svg>
+                                                Connecting...
+                                            </template>
+                                            <template v-else>
+                                                Configure Settings
+                                                <ExternalLink class="h-4 w-4" />
+                                            </template>
                                         </button>
 
                                         <!-- Toggle Switch -->

@@ -56,14 +56,8 @@ class PaypalController extends Controller
             $actionUrl = $payPalService->createPartnerReferral($referralData);
             Log::info('PayPal Partner Referral created successfully: ' . $actionUrl);
             
-            if ($request->wantsJson()) {
-                return response()->json([
-                    'url' => $actionUrl . '&displayMode=minibrowser'
-                ]);
-            }
-            
-            return Inertia::render('Integrations/PayPal/Onboarding', [
-                'paypalUrl' => $actionUrl . '&displayMode=minibrowser'
+            return response()->json([
+                'url' => $actionUrl . '&displayMode=minibrowser'
             ]);
         } catch (\Exception $e) {
             Log::error('PayPal onboarding error: ' . $e->getMessage());

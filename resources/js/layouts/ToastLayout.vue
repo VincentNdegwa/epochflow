@@ -1,40 +1,22 @@
 <script setup lang="ts">
 import { usePage } from '@inertiajs/vue3';
 import { CheckCircle, Info, X, XCircle } from 'lucide-vue-next';
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
-
-interface Toast {
-    id: string;
-    type: 'success' | 'error' | 'info';
-    message: string;
-}
+import { onBeforeUnmount, onMounted, watch } from 'vue';
+import { useToast } from '../composables/useToast';
 
 const page = usePage();
-const toasts = ref<Toast[]>([]);
-
-function pushToast(type: Toast['type'], message: string) {
-    const id = Date.now().toString() + Math.random().toString(36).slice(2, 6);
-    const t: Toast = { id, type, message };
-    toasts.value.push(t);
-    setTimeout(() => {
-        toasts.value = toasts.value.filter((x) => x.id !== id);
-    }, 4000);
-}
+const { toasts, toast } = useToast();
 
 function pushFlashToasts() {
     const flash = (page.props as any).flash ?? {};
-    if (flash.success) pushToast('success', String(flash.success));
-    if (flash.error) pushToast('error', String(flash.error));
+    if (flash.success) toast.success(String(flash.success));
+    if (flash.error) toast.error(String(flash.error));
 }
 
 onMounted(() => {
-    // show any flash present on initial render
     pushFlashToasts();
-    // register Inertia success if available (fires on every Inertia visit)
     const inertia = (window as any).Inertia;
     if (inertia && inertia.on) inertia.on('success', pushFlashToasts);
-    // fallback: watch page.props object — Inertia will replace page.props on navigation
-    // this catches cases where window.Inertia isn't available in the environment.
     watch(
         () => page.props as any,
         () => {
@@ -98,7 +80,7 @@ onBeforeUnmount(() => {
                             <button
                                 @click="
                                     toasts = toasts.filter(
-                                        (t) => t.id !== toast.id,
+                                        (t: { id: string }) => t.id !== toast.id,
                                     )
                                 "
                                 class="text-gray-400 hover:text-gray-600"
