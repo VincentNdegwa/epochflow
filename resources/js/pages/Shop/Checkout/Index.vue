@@ -34,11 +34,11 @@ const isProcessing = ref(false);
 
 const form = useForm({
     ...props.customer,
-    address: '',
-    city: '',
-    state: '',
-    zip_code: '',
-    country: '',
+    address: props.customer?.shipping_address || '',
+    city: props.customer?.shipping_city || '',
+    state: props.customer?.shipping_state || '',
+    zip_code: props.customer?.shipping_zip_code || '',
+    country: props.customer?.shipping_country || '',
     notes: '',
     payment_method: 'paypal',
     coupon: '',
