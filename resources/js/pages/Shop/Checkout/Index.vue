@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useForm } from '@inertiajs/vue3';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { route } from 'ziggy-js';
 import { Customer, Store } from '../../../types';
 import ShopLayout from '../../../layouts/Shop/ShopLayout.vue';
@@ -74,11 +74,11 @@ function validate(): boolean {
     return Object.keys(localErrors.value).length === 0;
 }
 
-// Watch shipping method changes
-const shippingMethodChange = (val: string) => {
+// Keep form.shipping_cost in sync with shippingMethod
+watch(shippingMethod, (val: string) => {
     form.shipping_method = val;
     form.shipping_cost = SHIPPING_COSTS[val] ?? 0;
-};
+});
 
 const itemsTotal = computed(() => {
     return (props.cartItems || []).reduce((sum: number, item: CartItem) => {
@@ -168,163 +168,126 @@ async function placeOrder() {
         <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
             <h1 class="mb-6 text-2xl font-bold">Checkout</h1>
 
-            <div class="rounded-lg bg-white p-6">
-                <h2 class="font-semibold">Order Summary</h2>
-                <div class="mt-4 space-y-2">
-                    <div
-                        v-for="item in props.cartItems || []"
-                        :key="item.id"
-                        class="flex justify-between"
-                    >
-                        <div>
-                            {{ item.product?.name }} x {{ item.quantity }}
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- Left: Inputs -->
+                <div class="lg:col-span-7 space-y-6">
+                    <div class="bg-white rounded-lg p-6">
+                        <h2 class="text-lg font-semibold mb-4">Shipping & Billing</h2>
+                        <div class="space-y-4">
+                            <label class="flex flex-col">
+                                <span class="text-sm font-medium">Full address <span class="text-red-600">*</span></span>
+                                <input v-model="form.address" class="input mt-1" placeholder="Street address, suite, etc." />
+                            </label>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <input v-model="form.city" class="input" placeholder="City" />
+                                <input v-model="form.zip_code" class="input" placeholder="ZIP / Postal code" />
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <input v-model="form.state" class="input" placeholder="State / Province" />
+                                <input v-model="form.country" class="input" placeholder="Country" />
+                            </div>
+
+                            <label class="flex flex-col">
+                                <span class="text-sm font-medium">Order notes (optional)</span>
+                                <textarea v-model="form.notes" rows="3" class="input mt-1" placeholder="Any delivery instructions"></textarea>
+                            </label>
                         </div>
-                        <div>
-                            ${{
-                                (
-                                    Number(item.product?.price || 0) *
-                                    item.quantity
-                                ).toFixed(2)
-                            }}
+                    </div>
+
+                    <div class="bg-white rounded-lg p-6">
+                        <h2 class="text-lg font-semibold mb-4">Payment</h2>
+                        <div class="space-y-3">
+                            <label class="flex items-center gap-3 p-3 border rounded-md cursor-pointer" :class="{ 'border-primary': form.payment_method === 'paypal' }">
+                                <input type="radio" v-model="form.payment_method" value="paypal" />
+                                <div>
+                                    <div class="font-medium">PayPal</div>
+                                    <div class="text-sm text-gray-500">Fast checkout with PayPal</div>
+                                </div>
+                                <img src="/images/paypal_logo.png" alt="PayPal" class="h-8 ml-auto" />
+                            </label>
+
+                            <label class="flex items-center gap-3 p-3 border rounded-md cursor-pointer" :class="{ 'border-primary': form.payment_method === 'cod' }">
+                                <input type="radio" v-model="form.payment_method" value="cod" />
+                                <div>
+                                    <div class="font-medium">Cash on Delivery</div>
+                                    <div class="text-sm text-gray-500">Pay when you receive the order</div>
+                                </div>
+                            </label>
                         </div>
                     </div>
                 </div>
-                <div class="mt-4 flex justify-between">
-                    <div>Items</div>
-                    <div>${{ (itemsTotal ?? 0).toFixed(2) }}</div>
-                </div>
-                <div class="mt-2 flex justify-between">
-                    <div>Shipping ({{ shippingMethod }})</div>
-                    <div>${{ (shippingCost ?? 0).toFixed(2) }}</div>
-                </div>
-                <div class="mt-2 flex justify-between">
-                    <div>Discount</div>
-                    <div>-${{ (couponDiscount ?? 0).toFixed(2) }}</div>
-                </div>
-                <div class="mt-4 text-right font-bold">
-                    Grand Total: ${{ (grandTotal ?? 0).toFixed(2) }}
-                </div>
-            </div>
 
-            <div class="mt-6 rounded-lg bg-white p-6">
-                <h2 class="font-semibold">Shipping & Billing</h2>
-                <div class="mt-4 grid grid-cols-1 gap-4">
-                    <label class="flex flex-col">
-                        <span class="text-sm font-medium">Address <span class="text-red-600">*</span></span>
-                        <input
-                            v-model="form.address"
-                            placeholder="Address"
-                            class="input"
-                            required
-                        />
-                        <div v-if="localErrors.address" class="text-sm text-red-600">
-                            {{ localErrors.address }}
+                <!-- Right: Order summary & checkout -->
+                <div class="lg:col-span-5">
+                    <div class="bg-white rounded-lg p-6 sticky top-6">
+                        <h2 class="text-lg font-semibold mb-4">Order Summary</h2>
+
+                        <div class="space-y-4">
+                            <div v-for="item in props.cartItems || []" :key="item.id" class="flex items-center justify-between">
+                                <div>
+                                    <div class="font-medium">{{ item.product?.name }}</div>
+                                    <div class="text-sm text-gray-500">Qty: {{ item.quantity }}</div>
+                                </div>
+                                <div class="font-medium">${{ (Number(item.product?.price || 0) * item.quantity).toFixed(2) }}</div>
+                            </div>
                         </div>
-                    </label>
 
-                    <div class="grid grid-cols-2 gap-4">
-                        <label class="flex flex-col">
-                            <span class="text-sm">City <span class="text-red-600">*</span></span>
-                            <input v-model="form.city" placeholder="City" class="input" required />
-                            <div v-if="localErrors.city" class="text-sm text-red-600">{{ localErrors.city }}</div>
-                        </label>
-                        <label class="flex flex-col">
-                            <span class="text-sm">ZIP Code <span class="text-red-600">*</span></span>
-                            <input v-model="form.zip_code" placeholder="ZIP code" class="input" required />
-                            <div v-if="localErrors.zip_code" class="text-sm text-red-600">{{ localErrors.zip_code }}</div>
-                        </label>
-                    </div>
+                        <div class="border-t my-4"></div>
 
-                    <div class="grid grid-cols-2 gap-4">
-                        <label class="flex flex-col">
-                            <span class="text-sm">State <span class="text-red-600">*</span></span>
-                            <input v-model="form.state" placeholder="State" class="input" required />
-                            <div v-if="localErrors.state" class="text-sm text-red-600">{{ localErrors.state }}</div>
-                        </label>
-                        <label class="flex flex-col">
-                            <span class="text-sm">Country <span class="text-red-600">*</span></span>
-                            <input v-model="form.country" placeholder="Country" class="input" required />
-                            <div v-if="localErrors.country" class="text-sm text-red-600">{{ localErrors.country }}</div>
-                        </label>
-                    </div>
-                </div>
-                <div class="mt-4">
-                    <label class="mb-2 block font-medium"
-                        >Shipping method</label
-                    >
-                    <select v-model="shippingMethod" class="input">
-                        <option value="none">
-                            No Shipping (${{ (SHIPPING_COSTS.none ?? 0).toFixed(2) }})
-                        </option>
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-sm text-gray-600">
+                                <span>Items</span>
+                                <span>${{ (itemsTotal ?? 0).toFixed(2) }}</span>
+                            </div>
+                            <div class="flex justify-between text-sm text-gray-600">
+                                <span>Shipping</span>
+                                <span>${{ (shippingCost ?? 0).toFixed(2) }}</span>
+                            </div>
+                            <div v-if="couponDiscount > 0" class="flex justify-between text-sm text-green-600">
+                                <span>Discount</span>
+                                <span>- ${{ (couponDiscount ?? 0).toFixed(2) }}</span>
+                            </div>
+                        </div>
 
-                        <option value="standard">
-                            Standard (${{ (SHIPPING_COSTS.standard ?? 0).toFixed(2) }})
-                        </option>
-                        <option value="express">
-                            Express (${{ (SHIPPING_COSTS.express ?? 0).toFixed(2) }})
-                        </option>
-                    </select>
-                </div>
-                <div class="mt-4">
-                    <label class="mb-2 block font-medium">Coupon</label>
-                    <div class="flex gap-2">
-                        <input
-                            v-model="coupon"
-                            placeholder="Coupon code"
-                            class="input"
-                        />
+                        <div class="border-t my-4"></div>
+
+                        <div class="flex justify-between items-center text-lg font-semibold">
+                            <span>Total</span>
+                            <span>${{ (grandTotal ?? 0).toFixed(2) }}</span>
+                        </div>
+
+                        <div class="mt-6">
+                            <label class="block text-sm font-medium mb-2">Shipping method</label>
+                            <select v-model="shippingMethod" class="input w-full">
+                                <option value="none">No Shipping {{ (SHIPPING_COSTS.none ?? 0).toFixed(2) }}</option>
+                                <option value="standard">Standard {{ (SHIPPING_COSTS.standard ?? 0).toFixed(2) }}</option>
+                                <option value="express">Express {{ (SHIPPING_COSTS.express ?? 0).toFixed(2) }}</option>
+                            </select>
+                        </div>
+
+                        <div class="mt-6">
+                            <label class="block text-sm font-medium mb-2">Coupon</label>
+                            <div class="flex gap-2">
+                                <input v-model="coupon" class="input flex-1" placeholder="Coupon code" />
+                                <button @click.prevent class="btn bg-primary/60 px-4">Apply</button>
+                            </div>
+                        </div>
+
                         <button
-                            @click.prevent="() => {}"
-                            class="btn bg-primary/60"
+                            @click="placeOrder"
+                            :disabled="isProcessing"
+                            class="mt-6 w-full bg-primary text-white py-3 rounded-md hover:bg-primary/90 disabled:opacity-50"
                         >
-                            Apply
+                            <template v-if="isProcessing">
+                                Processing...
+                            </template>
+                            <template v-else>
+                                Place Order — ${{ (grandTotal ?? 0).toFixed(2) }}
+                            </template>
                         </button>
                     </div>
-                </div>
-            </div>
-
-            <div class="mt-6 rounded-lg bg-white p-6">
-                <h2 class="font-semibold">Payment</h2>
-                <div class="mt-4 gap-4 space-y-4">
-                    <label class="mx-2 inline-flex items-center gap-2">
-                        <input
-                            type="radio"
-                            v-model="form.payment_method"
-                            value="cod"
-                        />
-                        <span>Cash on Delivery</span>
-                    </label>
-
-                    <label class="mx-2 inline-flex items-center gap-2">
-                        <input
-                            type="radio"
-                            v-model="form.payment_method"
-                            value="paypal"
-                        />
-                        <span class="flex items-center gap-2">
-                            PayPal
-                            <img src="/images/paypal_logo.png" alt="PayPal" class="h-15" />
-                        </span>
-                    </label>
-                </div>
-
-                <div class="mt-6 flex justify-end">
-                    <button
-                        class="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
-                        @click="placeOrder"
-                        :disabled="isProcessing"
-                    >
-                        <template v-if="isProcessing">
-                            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                            Processing...
-                        </template>
-                        <template v-else>
-                            Confirm & Pay ${{ (grandTotal ?? 0).toFixed(2) }}
-                        </template>
-                    </button>
                 </div>
             </div>
         </div>
