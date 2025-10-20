@@ -47,7 +47,7 @@ export interface Customer {
     billing_address: string | null;
     billing_city: string | null;
     billing_state: string | null;
-    billing_zip: string | null;
+    billing_zip_code: string | null;
     billing_country: string | null;
 
     shipping_address: string | null;

@@ -106,22 +106,23 @@ class CustomerOrderController extends Controller
         $store = Store::where('slug', $storeSlug)->firstOrFail();
 
         $validated = $request->validate([
-            'billing_address' => 'required|string',
-            'billing_city' => 'required|string',
-            'billing_state' => 'required|string',
-            'billing_zip_code' => 'required|string',
-            'billing_country' => 'required|string',
-            'shipping_address' => 'required|string',
-            'shipping_city' => 'required|string',
-            'shipping_state' => 'required|string',
-            'shipping_zip_code' => 'required|string',
-            'shipping_country' => 'required|string',
+            'address' => 'required|string',
+            'city' => 'required|string',
+            'state' => 'required|string',
+            'zip_code' => 'required|string',
+            'country' => 'required|string',
             'notes' => 'nullable|string',
             'payment_method' => 'required|string|in:cod,paypal',
             'shipping_method' => 'required|string',
             'shipping_cost' => 'required|numeric',
             'coupon' => 'nullable|string',
         ]);
+
+        $validated['billing_address'] = $validated['shipping_address'] = $validated['address'];
+        $validated['billing_city'] = $validated['shipping_city'] = $validated['city'];
+        $validated['billing_state'] = $validated['shipping_state'] = $validated['state'];
+        $validated['billing_zip_code'] = $validated['shipping_zip_code'] = $validated['zip_code'];
+        $validated['billing_country'] = $validated['shipping_country'] = $validated['country'];
 
         try {
             $customer = Auth::guard('customer')->user();
@@ -179,16 +180,16 @@ class CustomerOrderController extends Controller
                 }
 
                 $customer->fill([
-                    'billing_address' => $validated['billing_address'] ?? null,
-                    'billing_city' => $validated['billing_city'] ?? null,
-                    'billing_state' => $validated['billing_state'] ?? null,
-                    'billing_zip_code' => $validated['billing_zip_code'] ?? null,
-                    'billing_country' => $validated['billing_country'] ?? null,
-                    'shipping_address' => $validated['shipping_address'] ?? null,
-                    'shipping_city' => $validated['shipping_city'] ?? null,
-                    'shipping_state' => $validated['shipping_state'] ?? null,
-                    'shipping_zip_code' => $validated['shipping_zip_code'] ?? null,
-                    'shipping_country' => $validated['shipping_country'] ?? null,
+                    'billing_address' => $validated['address'] ?? null,
+                    'billing_city' => $validated['city'] ?? null,
+                    'billing_state' => $validated['state'] ?? null,
+                    'billing_zip_code' => $validated['zip_code'] ?? null,
+                    'billing_country' => $validated['country'] ?? null,
+                    'shipping_address' => $validated['address'] ?? null,
+                    'shipping_city' => $validated['city'] ?? null,
+                    'shipping_state' => $validated['state'] ?? null,
+                    'shipping_zip_code' => $validated['zip_code'] ?? null,
+                    'shipping_country' => $validated['country'] ?? null,
                 ]);
                 $customer->save();
 

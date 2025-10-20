@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useForm } from '@inertiajs/vue3';
-import { computed, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 import { route } from 'ziggy-js';
 import { Customer, Store } from '../../../types';
 import ShopLayout from '../../../layouts/Shop/ShopLayout.vue';
@@ -20,9 +20,8 @@ const props = defineProps<{
     customer: Customer;
 }>();
 
-const sameAsBilling = ref(false);
 const coupon = ref('');
-const shippingMethod = ref('none');
+const shippingMethod = ref('standard');
 
 const SHIPPING_COSTS: Record<string, number> = {
     none: 0.0,
@@ -35,8 +34,13 @@ const isProcessing = ref(false);
 
 const form = useForm({
     ...props.customer,
+    address: '',
+    city: '',
+    state: '',
+    zip_code: '',
+    country: '',
     notes: '',
-    payment_method: 'cod',
+    payment_method: 'paypal',
     coupon: '',
     shipping_method: shippingMethod.value,
     shipping_cost: SHIPPING_COSTS[shippingMethod.value],
@@ -48,28 +52,14 @@ function validate(): boolean {
     localErrors.value = {};
 
     const requiredFields = [
-        'billing_address',
-        'billing_city',
-        'billing_state',
-        'billing_zip_code',
-        'billing_country',
-    ];
-
-    const shippingFields = [
-        'shipping_address',
-        'shipping_city',
-        'shipping_state',
-        'shipping_zip_code',
-        'shipping_country',
+        'address',
+        'city',
+        'state',
+        'zip_code',
+        'country',
     ];
 
     requiredFields.forEach((f) => {
-        if (!String((form as any)[f] || '').trim()) {
-            localErrors.value[f] = 'This field is required.';
-        }
-    });
-
-    shippingFields.forEach((f) => {
         if (!String((form as any)[f] || '').trim()) {
             localErrors.value[f] = 'This field is required.';
         }
@@ -84,20 +74,11 @@ function validate(): boolean {
     return Object.keys(localErrors.value).length === 0;
 }
 
-watch(shippingMethod, (val) => {
+// Watch shipping method changes
+const shippingMethodChange = (val: string) => {
     form.shipping_method = val;
     form.shipping_cost = SHIPPING_COSTS[val] ?? 0;
-});
-
-watch(sameAsBilling, (val) => {
-    if (val) {
-        form.shipping_address = form.billing_address;
-        form.shipping_city = form.billing_city;
-        form.shipping_state = form.billing_state;
-        form.shipping_zip_code = form.billing_zip_code;
-        form.shipping_country = form.billing_country;
-    }
-});
+};
 
 const itemsTotal = computed(() => {
     return (props.cartItems || []).reduce((sum: number, item: CartItem) => {
@@ -128,13 +109,7 @@ async function placeOrder() {
     form.shipping_method = shippingMethod.value;
     form.shipping_cost = shippingCost.value;
 
-    if (sameAsBilling.value) {
-        form.shipping_address = form.billing_address;
-        form.shipping_city = form.billing_city;
-        form.shipping_state = form.billing_state;
-        form.shipping_zip_code = form.billing_zip_code;
-        form.shipping_country = form.billing_country;
-    }
+    // Set both billing and shipping to the same address
 
     const isValid = validate();
     if (!isValid) {
@@ -216,18 +191,18 @@ async function placeOrder() {
                 </div>
                 <div class="mt-4 flex justify-between">
                     <div>Items</div>
-                    <div>${{ itemsTotal.toFixed(2) }}</div>
+                    <div>${{ (itemsTotal ?? 0).toFixed(2) }}</div>
                 </div>
                 <div class="mt-2 flex justify-between">
                     <div>Shipping ({{ shippingMethod }})</div>
-                    <div>${{ shippingCost.toFixed(2) }}</div>
+                    <div>${{ (shippingCost ?? 0).toFixed(2) }}</div>
                 </div>
                 <div class="mt-2 flex justify-between">
                     <div>Discount</div>
-                    <div>-${{ couponDiscount.toFixed(2) }}</div>
+                    <div>-${{ (couponDiscount ?? 0).toFixed(2) }}</div>
                 </div>
                 <div class="mt-4 text-right font-bold">
-                    Grand Total: ${{ grandTotal.toFixed(2) }}
+                    Grand Total: ${{ (grandTotal ?? 0).toFixed(2) }}
                 </div>
             </div>
 
@@ -235,195 +210,41 @@ async function placeOrder() {
                 <h2 class="font-semibold">Shipping & Billing</h2>
                 <div class="mt-4 grid grid-cols-1 gap-4">
                     <label class="flex flex-col">
-                        <span class="text-sm font-medium"
-                            >Billing address
-                            <span class="text-red-600">*</span></span
-                        >
+                        <span class="text-sm font-medium">Address <span class="text-red-600">*</span></span>
                         <input
-                            v-model="form.billing_address"
-                            placeholder="Billing address"
+                            v-model="form.address"
+                            placeholder="Address"
                             class="input"
                             required
                         />
-                        <div
-                            v-if="localErrors.billing_address"
-                            class="text-sm text-red-600"
-                        >
-                            {{ localErrors.billing_address }}
+                        <div v-if="localErrors.address" class="text-sm text-red-600">
+                            {{ localErrors.address }}
                         </div>
                     </label>
+
                     <div class="grid grid-cols-2 gap-4">
                         <label class="flex flex-col">
-                            <span class="text-sm"
-                                >Billing city
-                                <span class="text-red-600">*</span></span
-                            >
-                            <input
-                                v-model="form.billing_city"
-                                placeholder="Billing city"
-                                class="input"
-                                required
-                            />
-                            <div
-                                v-if="localErrors.billing_city"
-                                class="text-sm text-red-600"
-                            >
-                                {{ localErrors.billing_city }}
-                            </div>
+                            <span class="text-sm">City <span class="text-red-600">*</span></span>
+                            <input v-model="form.city" placeholder="City" class="input" required />
+                            <div v-if="localErrors.city" class="text-sm text-red-600">{{ localErrors.city }}</div>
                         </label>
                         <label class="flex flex-col">
-                            <span class="text-sm"
-                                >Billing zip
-                                <span class="text-red-600">*</span></span
-                            >
-                            <input
-                                v-model="form.billing_zip"
-                                placeholder="Billing zip"
-                                class="input"
-                                required
-                            />
-                            <div
-                                v-if="localErrors.billing_zip_code"
-                                class="text-sm text-red-600"
-                            >
-                                {{ localErrors.billing_zip_code }}
-                            </div>
+                            <span class="text-sm">ZIP Code <span class="text-red-600">*</span></span>
+                            <input v-model="form.zip_code" placeholder="ZIP code" class="input" required />
+                            <div v-if="localErrors.zip_code" class="text-sm text-red-600">{{ localErrors.zip_code }}</div>
                         </label>
                     </div>
+
                     <div class="grid grid-cols-2 gap-4">
                         <label class="flex flex-col">
-                            <span class="text-sm"
-                                >Billing state
-                                <span class="text-red-600">*</span></span
-                            >
-                            <input
-                                v-model="form.billing_state"
-                                placeholder="Billing state"
-                                class="input"
-                                required
-                            />
-                            <div
-                                v-if="localErrors.billing_state"
-                                class="text-sm text-red-600"
-                            >
-                                {{ localErrors.billing_state }}
-                            </div>
+                            <span class="text-sm">State <span class="text-red-600">*</span></span>
+                            <input v-model="form.state" placeholder="State" class="input" required />
+                            <div v-if="localErrors.state" class="text-sm text-red-600">{{ localErrors.state }}</div>
                         </label>
                         <label class="flex flex-col">
-                            <span class="text-sm"
-                                >Billing country
-                                <span class="text-red-600">*</span></span
-                            >
-                            <input
-                                v-model="form.billing_country"
-                                placeholder="Billing country"
-                                class="input"
-                                required
-                            />
-                            <div
-                                v-if="localErrors.billing_country"
-                                class="text-sm text-red-600"
-                            >
-                                {{ localErrors.billing_country }}
-                            </div>
-                        </label>
-                    </div>
-                    <label class="inline-flex items-center gap-2">
-                        <input type="checkbox" v-model="sameAsBilling" />
-                        <span>Shipping address same as billing</span>
-                    </label>
-                    <label class="flex flex-col">
-                        <span class="text-sm"
-                            >Shipping address
-                            <span class="text-red-600">*</span></span
-                        >
-                        <input
-                            v-model="form.shipping_address"
-                            placeholder="Shipping address"
-                            class="input"
-                            required
-                        />
-                        <div
-                            v-if="localErrors.shipping_address"
-                            class="text-sm text-red-600"
-                        >
-                            {{ localErrors.shipping_address }}
-                        </div>
-                    </label>
-                    <div class="grid grid-cols-2 gap-4">
-                        <label class="flex flex-col">
-                            <span class="text-sm"
-                                >Shipping city
-                                <span class="text-red-600">*</span></span
-                            >
-                            <input
-                                v-model="form.shipping_city"
-                                placeholder="Shipping city"
-                                class="input"
-                                required
-                            />
-                            <div
-                                v-if="localErrors.shipping_city"
-                                class="text-sm text-red-600"
-                            >
-                                {{ localErrors.shipping_city }}
-                            </div>
-                        </label>
-                        <label class="flex flex-col">
-                            <span class="text-sm"
-                                >Shipping zip
-                                <span class="text-red-600">*</span></span
-                            >
-                            <input
-                                v-model="form.shipping_zip"
-                                placeholder="Shipping zip"
-                                class="input"
-                                required
-                            />
-                            <div
-                                v-if="localErrors.shipping_zip_code"
-                                class="text-sm text-red-600"
-                            >
-                                {{ localErrors.shipping_zip_code }}
-                            </div>
-                        </label>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <label class="flex flex-col">
-                            <span class="text-sm"
-                                >Shipping state
-                                <span class="text-red-600">*</span></span
-                            >
-                            <input
-                                v-model="form.shipping_state"
-                                placeholder="Shipping state"
-                                class="input"
-                                required
-                            />
-                            <div
-                                v-if="localErrors.shipping_state"
-                                class="text-sm text-red-600"
-                            >
-                                {{ localErrors.shipping_state }}
-                            </div>
-                        </label>
-                        <label class="flex flex-col">
-                            <span class="text-sm"
-                                >Shipping country
-                                <span class="text-red-600">*</span></span
-                            >
-                            <input
-                                v-model="form.shipping_country"
-                                placeholder="Shipping country"
-                                class="input"
-                                required
-                            />
-                            <div
-                                v-if="localErrors.shipping_country"
-                                class="text-sm text-red-600"
-                            >
-                                {{ localErrors.shipping_country }}
-                            </div>
+                            <span class="text-sm">Country <span class="text-red-600">*</span></span>
+                            <input v-model="form.country" placeholder="Country" class="input" required />
+                            <div v-if="localErrors.country" class="text-sm text-red-600">{{ localErrors.country }}</div>
                         </label>
                     </div>
                 </div>
@@ -433,14 +254,14 @@ async function placeOrder() {
                     >
                     <select v-model="shippingMethod" class="input">
                         <option value="none">
-                            No Shipping (${{ SHIPPING_COSTS.none.toFixed(2) }})
+                            No Shipping (${{ (SHIPPING_COSTS.none ?? 0).toFixed(2) }})
                         </option>
 
                         <option value="standard">
-                            Standard (${{ SHIPPING_COSTS.standard.toFixed(2) }})
+                            Standard (${{ (SHIPPING_COSTS.standard ?? 0).toFixed(2) }})
                         </option>
                         <option value="express">
-                            Express (${{ SHIPPING_COSTS.express.toFixed(2) }})
+                            Express (${{ (SHIPPING_COSTS.express ?? 0).toFixed(2) }})
                         </option>
                     </select>
                 </div>
@@ -501,7 +322,7 @@ async function placeOrder() {
                             Processing...
                         </template>
                         <template v-else>
-                            Confirm & Pay ${{ grandTotal.toFixed(2) }}
+                            Confirm & Pay ${{ (grandTotal ?? 0).toFixed(2) }}
                         </template>
                     </button>
                 </div>
