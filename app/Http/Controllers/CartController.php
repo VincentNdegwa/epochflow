@@ -35,9 +35,8 @@ class CartController extends Controller
             });
         }
 
-        $template = $store->template ?? 'default';
 
-        return Inertia::render("templates/{$template}/pages/Cart/Index", [
+        return Inertia::render("Shop/Cart/Index", [
             'cartItems' => $cartItems,
             'total' => $total,
             'customer' => $customer,

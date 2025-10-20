@@ -57,7 +57,7 @@ const navigation = [
         <StoreFooter :store="props.store" :navigation="navigation" />
     </ToastLayout>
 </template>
-<style>
+<style scoped >
 header {
     background-image: var(--header-image);
     background-size: cover;

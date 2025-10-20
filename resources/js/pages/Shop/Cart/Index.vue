@@ -4,8 +4,8 @@ import type {
     CartItem as CartItemType,
     Customer,
     Store,
-} from '../../../../../types';
-import ShopLayout from '../../layouts/ShopLayout.vue';
+} from '../../../types';
+import ShopLayout from '../../../layouts/Shop/ShopLayout.vue';
 
 interface Props {
     cartItems: CartItemType[];
@@ -149,5 +149,6 @@ function updateQuantity(id: number, qty: number) {
                 </div>
             </div>
         </div>
+
     </ShopLayout>
 </template>

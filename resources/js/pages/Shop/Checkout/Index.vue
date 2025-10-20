@@ -2,10 +2,10 @@
 import { useForm } from '@inertiajs/vue3';
 import { computed, ref, watch } from 'vue';
 import { route } from 'ziggy-js';
-import { Customer, Store } from '../../../../../types';
-import ShopLayout from '../../layouts/ShopLayout.vue';
+import { Customer, Store } from '../../../types';
+import ShopLayout from '../../../layouts/Shop/ShopLayout.vue';
 import axios from 'axios';
-import { useToast } from '../../../../../composables/useToast';
+import { useToast } from '../../../composables/useToast';
 
 interface CartItem {
     id: number;

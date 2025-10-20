@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { route } from 'ziggy-js';
-import ShopLayout from '../../layouts/ShopLayout.vue';
-const props = defineProps<{ order: any; store: any; customer: any }>();
+import ShopLayout from '../../../layouts/Shop/ShopLayout.vue';
+const props = defineProps<{ order: any; store: any; customer: any; cartItems: any[] }>();
 </script>
 
 <template>
     <ShopLayout
         :store="props.store"
         :customer="props.customer"
-        :cart-items-count="0"
+        :cart-items-count="(props.cartItems || []).length"
     >
         <div class="mx-auto max-w-7xl px-4 py-12">
             <div class="mb-6 flex items-center justify-between">

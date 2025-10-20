@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { route } from 'ziggy-js';
-import { Order, Store } from '../../../../../types';
-import NormalLayout from '../../layouts/NormalLayout.vue';
+import { Order, Store } from '../../../types';
+import ShopLayout from '../../../layouts/Shop/ShopLayout.vue';
 
 interface Paginated<T> {
     data: T[];
@@ -10,14 +10,15 @@ const props = defineProps<{
     orders: Paginated<Order>;
     store: Store;
     customer: any;
+    cartItems: any[];
 }>();
 </script>
 
 <template>
-    <NormalLayout
+    <ShopLayout
         :store="props.store"
         :customer="props.customer"
-        :cart-items-count="0"
+        :cart-items-count="(props.cartItems || []).length"
         :title="'My Orders'"
         :description="'View and manage your orders at ' + props.store.name"
     >
@@ -136,5 +137,5 @@ const props = defineProps<{
                 </div>
             </div>
         </div>
-    </NormalLayout>
+    </ShopLayout>
 </template>

@@ -104,13 +104,13 @@ class CustomerAuthController extends Controller
         return redirect()->route('stores.show', ['slug' => $storeSlug]);
     }
 
-    public function logout(Request $request)
+    public function logout(Request $request, $storeSlug)
     {
         Auth::guard('customer')->logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->back();
+        return redirect()->route("customer.login", ['storeSlug' => $storeSlug]);
     }
 }

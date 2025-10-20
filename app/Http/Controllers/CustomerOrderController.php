@@ -27,12 +27,20 @@ class CustomerOrderController extends Controller
             ->latest()
             ->paginate(12);
 
-        $template = $store->template ?? 'default';
+        $cartItems = collect();
+        if ($customer) {
+            $cartItems = CartItem::with('product')
+                ->where('customer_id', $customer->id)
+                ->get()
+                ->filter(fn($i) => $i->product && $i->product->store_id == $store->id)
+                ->values();
+        }
 
-        return Inertia::render("templates/{$template}/pages/Orders/Index", [
+        return Inertia::render("Shop/Orders/Index", [
             'orders' => $orders,
             'store' => $store,
             'customer' => $customer,
+            'cartItems' => $cartItems,
         ]);
     }
 
@@ -48,12 +56,20 @@ class CustomerOrderController extends Controller
             abort(403);
         }
 
-        $template = $store->template ?? 'default';
+        $cartItems = collect();
+        if ($customer) {
+            $cartItems = CartItem::with('product')
+                ->where('customer_id', $customer->id)
+                ->get()
+                ->filter(fn($i) => $i->product && $i->product->store_id == $store->id)
+                ->values();
+        }
 
-        return Inertia::render("templates/{$template}/pages/Orders/Show", [
+        return Inertia::render("Shop/Orders/Show", [
             'order' => $order->load('items.product'),
             'store' => $store,
             'customer' => $customer,
+            'cartItems' => $cartItems,
         ]);
     }
 
@@ -70,15 +86,13 @@ class CustomerOrderController extends Controller
             $cartItems = CartItem::with('product')
                 ->where('customer_id', $customer->id)
                 ->get()
-                ->filter(fn ($i) => $i->product && $i->product->store_id == $store->id)
+                ->filter(fn($i) => $i->product && $i->product->store_id == $store->id)
                 ->values();
 
-            $total = $cartItems->sum(fn ($item) => $item->product->price * $item->quantity);
+            $total = $cartItems->sum(fn($item) => $item->product->price * $item->quantity);
         }
 
-        $template = $store->template ?? 'default';
-
-        return Inertia::render("templates/{$template}/pages/Checkout/Index", [
+        return Inertia::render("Shop/Checkout/Index", [
             'cartItems' => $cartItems,
             'total' => $total,
             'store' => $store,
@@ -118,7 +132,7 @@ class CustomerOrderController extends Controller
             $cartItems = CartItem::with('product')
                 ->where('customer_id', $customer->id)
                 ->get()
-                ->filter(fn ($i) => $i->product && $i->product->store_id == $store->id)
+                ->filter(fn($i) => $i->product && $i->product->store_id == $store->id)
                 ->values();
 
             if ($cartItems->isEmpty()) {
@@ -131,7 +145,7 @@ class CustomerOrderController extends Controller
                 }
             }
 
-            $subtotal = $cartItems->sum(fn ($item) => $item->product->price * $item->quantity);
+            $subtotal = $cartItems->sum(fn($item) => $item->product->price * $item->quantity);
             $shippingCost = $validated['shipping_cost'];
             $discount = 0; // Handle coupon logic here if needed
             $total = $subtotal + $shippingCost - $discount;
@@ -139,7 +153,7 @@ class CustomerOrderController extends Controller
             $orderData = array_merge($validated, [
                 'store_id' => $store->id,
                 'customer_id' => $customer->id,
-                'order_number' => 'ORD-'.Str::upper(Str::random(8)),
+                'order_number' => 'ORD-' . Str::upper(Str::random(8)),
                 'subtotal' => $subtotal,
                 'shipping_cost' => $shippingCost,
                 'discount' => $discount,
@@ -206,7 +220,6 @@ class CustomerOrderController extends Controller
                 }
 
                 throw new \Exception('Invalid payment method.');
-
             } catch (\Throwable $e) {
                 DB::rollBack();
                 throw $e;
@@ -242,7 +255,7 @@ class CustomerOrderController extends Controller
             $order->update(['status' => 'paid']);
 
             CartItem::where('customer_id', $customer->id)
-                ->whereHas('product', fn ($q) => $q->where('store_id', $store->id))
+                ->whereHas('product', fn($q) => $q->where('store_id', $store->id))
                 ->delete();
 
             DB::commit();
@@ -252,7 +265,7 @@ class CustomerOrderController extends Controller
         } catch (\Throwable $e) {
             DB::rollBack();
 
-            return redirect()->back()->with('error', 'Payment failed: '.$e->getMessage());
+            return redirect()->back()->with('error', 'Payment failed: ' . $e->getMessage());
         }
     }
 }

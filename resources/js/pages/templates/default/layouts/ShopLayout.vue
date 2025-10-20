@@ -232,7 +232,7 @@ const locationText = computed(() => (props.store as any)?.location ?? '');
     </ToastLayout>
 </template>
 
-<style>
+<style scoped >
 header {
     background-image: var(--header-image);
     background-size: cover;

@@ -1,5 +1,5 @@
 <template>
-    <Menu as="div" class="relative">
+    <Menu as="div" class="relative z-50">
         <MenuButton
             class="flex items-center gap-2 rounded-full bg-background p-2 text-sm font-medium hover:bg-accent"
         >
@@ -22,7 +22,9 @@
                 <div class="px-1 py-1">
                     <MenuItem v-slot="{ active }">
                         <Link
-                            :href="route('orders.index')"
+                            :href="route('customer.orders.index', {
+                                storeSlug: props.store.slug,
+                            })"
                             :class="[
                                 active
                                     ? 'bg-accent text-accent-foreground'
@@ -72,7 +74,7 @@
                             </span>
                         </Link>
                     </MenuItem>
-                    <MenuItem v-slot="{ active }">
+                    <!-- <MenuItem v-slot="{ active }">
                         <Link
                             :href="route('profile.edit')"
                             :class="[
@@ -113,7 +115,7 @@
                             />
                             Change Password
                         </Link>
-                    </MenuItem>
+                    </MenuItem> -->
                     <div class="my-1 h-px bg-border" />
                     <MenuItem v-slot="{ active }">
                         <button
