@@ -4,6 +4,8 @@ import { computed, ref, watch } from 'vue';
 import { route } from 'ziggy-js';
 import { Customer, Store } from '../../../../../types';
 import ShopLayout from '../../layouts/ShopLayout.vue';
+import axios from 'axios';
+import { useToast } from '../../../../../composables/useToast';
 
 interface CartItem {
     id: number;
@@ -27,6 +29,9 @@ const SHIPPING_COSTS: Record<string, number> = {
     standard: 5.0,
     express: 12.0,
 };
+
+const { toast } = useToast();
+const isProcessing = ref(false);
 
 const form = useForm({
     ...props.customer,
@@ -116,7 +121,9 @@ const grandTotal = computed(() => {
     );
 });
 
-function placeOrder() {
+async function placeOrder() {
+    if (isProcessing.value) return;
+
     form.coupon = coupon.value;
     form.shipping_method = shippingMethod.value;
     form.shipping_cost = shippingCost.value;
@@ -130,15 +137,50 @@ function placeOrder() {
     }
 
     const isValid = validate();
-    console.log('isValid', isValid);
-
     if (!isValid) {
         return;
     }
 
-    form.post(route('checkout.store', { storeSlug: props.store?.slug }), {
-        preserveScroll: true,
-    });
+    isProcessing.value = true;
+
+    try {
+        const response = await axios.post(route('checkout.store', { storeSlug: props.store?.slug }), form.data());
+
+        if (!response.data.success) {
+            throw new Error(response.data.message || 'Failed to create order');
+        }
+
+        const { order, next_action } = response.data;
+
+        if (next_action === 'process_payment' && form.payment_method === 'paypal') {
+            try {
+                const paypalResponse = await axios.post(route('payments.paypal.create', {
+                    storeSlug: props.store?.slug,
+                    order: order.id
+                }));
+
+                if (paypalResponse.data.approval_url) {
+                    window.location.href = paypalResponse.data.approval_url;
+                } else {
+                    throw new Error('PayPal approval URL not found');
+                }
+            } catch (error: any) {
+                toast.error('Failed to initiate PayPal payment: ' + (error.response?.data?.message || error.message));
+            }
+        } else if (next_action === 'complete_order') {
+            window.location.href = route('customer.orders.show', {
+                storeSlug: props.store?.slug,
+                slug: order.slug
+            });
+        } else {
+            throw new Error('Invalid next action');
+        }
+    } catch (error: any) {
+        const errorMessage = error.response?.data?.message || error.message;
+        toast.error('Failed to process order: ' + errorMessage);
+    } finally {
+        isProcessing.value = false;
+    }
 }
 </script>
 
@@ -235,7 +277,7 @@ function placeOrder() {
                                 <span class="text-red-600">*</span></span
                             >
                             <input
-                                v-model="form.billing_zip_code"
+                                v-model="form.billing_zip"
                                 placeholder="Billing zip"
                                 class="input"
                                 required
@@ -333,7 +375,7 @@ function placeOrder() {
                                 <span class="text-red-600">*</span></span
                             >
                             <input
-                                v-model="form.shipping_zip_code"
+                                v-model="form.shipping_zip"
                                 placeholder="Shipping zip"
                                 class="input"
                                 required
@@ -436,18 +478,31 @@ function placeOrder() {
                         <input
                             type="radio"
                             v-model="form.payment_method"
-                            value="card"
+                            value="paypal"
                         />
-                        <span>Card (online)</span>
+                        <span class="flex items-center gap-2">
+                            PayPal
+                            <img src="/images/paypal_logo.png" alt="PayPal" class="h-15" />
+                        </span>
                     </label>
                 </div>
 
                 <div class="mt-6 flex justify-end">
                     <button
-                        class="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white"
+                        class="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
                         @click="placeOrder"
+                        :disabled="isProcessing"
                     >
-                        Confirm & Pay ${{ grandTotal.toFixed(2) }}
+                        <template v-if="isProcessing">
+                            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Processing...
+                        </template>
+                        <template v-else>
+                            Confirm & Pay ${{ grandTotal.toFixed(2) }}
+                        </template>
                     </button>
                 </div>
             </div>

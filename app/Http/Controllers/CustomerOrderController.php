@@ -103,13 +103,16 @@ class CustomerOrderController extends Controller
             'shipping_zip_code' => 'required|string',
             'shipping_country' => 'required|string',
             'notes' => 'nullable|string',
-            'payment_method' => 'required|string',
+            'payment_method' => 'required|string|in:cod,paypal',
+            'shipping_method' => 'required|string',
+            'shipping_cost' => 'required|numeric',
+            'coupon' => 'nullable|string',
         ]);
 
         try {
             $customer = Auth::guard('customer')->user();
             if (! $customer) {
-                return redirect()->route('stores.show', ['slug' => $store->slug])->with('error', 'Please login as a customer to checkout.');
+                throw new \Exception('Please login as a customer to checkout.');
             }
 
             $cartItems = CartItem::with('product')
@@ -119,23 +122,31 @@ class CustomerOrderController extends Controller
                 ->values();
 
             if ($cartItems->isEmpty()) {
-                return redirect()->back()->with('error', 'Your cart is empty.');
+                throw new \Exception('Your cart is empty.');
             }
 
             foreach ($cartItems as $item) {
                 if ($item->product->stock < $item->quantity) {
-                    return redirect()->back()->with('error', "Product {$item->product->name} does not have enough stock.");
+                    throw new \Exception("Product {$item->product->name} does not have enough stock.");
                 }
             }
 
-            $total = $cartItems->sum(fn ($item) => $item->product->price * $item->quantity);
+            $subtotal = $cartItems->sum(fn ($item) => $item->product->price * $item->quantity);
+            $shippingCost = $validated['shipping_cost'];
+            $discount = 0; // Handle coupon logic here if needed
+            $total = $subtotal + $shippingCost - $discount;
 
             $orderData = array_merge($validated, [
                 'store_id' => $store->id,
                 'customer_id' => $customer->id,
                 'order_number' => 'ORD-'.Str::upper(Str::random(8)),
+                'subtotal' => $subtotal,
+                'shipping_cost' => $shippingCost,
+                'discount' => $discount,
                 'total_amount' => $total,
                 'status' => 'pending',
+                'payment_status' => 'pending',
+                'payment_method' => $validated['payment_method'],
             ]);
 
             DB::beginTransaction();
@@ -168,16 +179,45 @@ class CustomerOrderController extends Controller
                 $customer->save();
 
                 DB::commit();
+
+                // Handle different payment methods
+                if ($validated['payment_method'] === 'paypal') {
+                    $paymentIntegration = $store->paymentIntegrations()
+                        ->where('provider', 'paypal')
+                        ->where('is_configured', true)
+                        ->where('is_enabled', true)
+                        ->first();
+
+                    if (!$paymentIntegration) {
+                        throw new \Exception('PayPal is not configured for this store.');
+                    }
+
+                    return response()->json([
+                        'success' => true,
+                        'order' => $order,
+                        'next_action' => 'process_payment'
+                    ]);
+                } else if ($validated['payment_method'] === 'cod') {
+                    return response()->json([
+                        'success' => true,
+                        'order' => $order,
+                        'next_action' => 'complete_order'
+                    ]);
+                }
+
+                throw new \Exception('Invalid payment method.');
+
             } catch (\Throwable $e) {
                 DB::rollBack();
-                throw $e; // bubble up to outer catch
+                throw $e;
             }
-
-            return redirect()->route('checkout.pay', ['storeSlug' => $store->slug, 'order_id' => $order->id]);
         } catch (ValidationException $e) {
             throw $e;
         } catch (\Throwable $e) {
-            return redirect()->back()->with('error', 'Failed to create order: '.$e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 422);
         }
     }
 

@@ -52,4 +52,9 @@ class Store extends Model
     {
         return $this->hasMany(Order::class);
     }
+
+    public function paymentIntegrations(): HasMany
+    {
+        return $this->hasMany(PaymentIntegration::class);
+    }
 }

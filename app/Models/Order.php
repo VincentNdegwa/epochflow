@@ -28,6 +28,10 @@ class Order extends Model
         'shipping_state',
         'shipping_zip_code',
         'shipping_country',
+        'payment_provider',
+        'payment_id',
+        'payment_status',
+        'payment_completed_at',
     ];
 
     protected $casts = [

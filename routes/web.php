@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\CustomerAuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\PayPalPaymentController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\Integration\IntegrationController;
 use App\Http\Controllers\Integration\PaymentIntegrationController;
@@ -42,6 +43,13 @@ Route::prefix('store/{storeSlug}')->group(function () {
     Route::get('checkout', [\App\Http\Controllers\CustomerOrderController::class, 'create'])->name('checkout.create');
     Route::post('checkout', [\App\Http\Controllers\CustomerOrderController::class, 'store'])->name('checkout.store');
     Route::get('checkout/pay/{order_id}', [\App\Http\Controllers\CustomerOrderController::class, 'pay'])->name('checkout.pay');
+    
+    Route::prefix('payments/paypal')->name('payments.paypal.')->group(function () {
+        Route::post('create/{order}', [PayPalPaymentController::class, 'createOrder'])->name('create');
+        Route::get('capture', [PayPalPaymentController::class, 'capture'])->name('capture');
+        Route::get('cancel', [PayPalPaymentController::class, 'cancel'])->name('cancel');
+    });
+    
     Route::get('products/{slug}', [\App\Http\Controllers\ShopController::class, 'show'])->name('store.products.show')->where('slug', '.*'); // Allow encrypted slug format
 
     Route::get('orders', [\App\Http\Controllers\CustomerOrderController::class, 'index'])->name('customer.orders.index');
