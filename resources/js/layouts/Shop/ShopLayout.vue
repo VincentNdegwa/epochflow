@@ -43,7 +43,6 @@ defineProps<Props>();
             </header>
 
             <main class="relative">
-                <!-- Page content -->
                 <slot />
             </main>
 
